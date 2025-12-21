@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface ProgressBarProps {
@@ -10,14 +9,14 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ current, total }) => {
   const percentage = Math.round((current / total) * 100);
 
   return (
-    <div className="w-full mb-10">
-      <div className="flex justify-between items-end mb-3">
-        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em]">Assessment Progress</span>
-        <span className="text-sm font-bold text-white">{percentage}%</span>
+    <div className="w-full mb-12">
+      <div className="flex justify-between items-end mb-4">
+        <span className="text-[10px] font-bold text-muted uppercase tracking-[0.4em]">Section Progress</span>
+        <span className="text-sm font-black text-white">{percentage}%</span>
       </div>
-      <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden border border-white/5">
+      <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden border border-white/5">
         <div 
-          className="bg-ignite-orange h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_15px_rgba(237,137,54,0.4)]" 
+          className="progress-bar-fill h-full rounded-full transition-all duration-1000 ease-out" 
           style={{ width: `${percentage}%` }}
         ></div>
       </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Button from './Button';
 import { LeadData } from '../types';
@@ -31,23 +30,23 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit }) => {
     }
   };
 
-  const inputClasses = "w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-ignite-orange focus:ring-1 focus:ring-ignite-orange outline-none transition-all placeholder:text-gray-600";
-  const labelClasses = "block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2";
+  const inputClasses = "w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 outline-none transition-all placeholder:text-muted/30";
+  const labelClasses = "block text-xs font-bold text-muted uppercase tracking-[0.2em] mb-3";
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-12">
-      <div className="glass-panel rounded-2xl p-8 sm:p-12">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-white">Personalise Your Results</h2>
-          <p className="text-gray-400 mt-3">
-            Benchmarked against similar sized UK organisations.
+    <div className="max-w-2xl mx-auto px-4 py-16 animate-fade-in">
+      <div className="glass-panel p-8 sm:p-12">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-white mb-4">Personalise Your Results</h2>
+          <p className="text-secondary">
+            Get your report benchmarked against UK organisations of your scale.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <label htmlFor="firstName" className={labelClasses}>First Name *</label>
+              <label htmlFor="firstName" className={labelClasses}>First Name</label>
               <input
                 type="text"
                 id="firstName"
@@ -60,7 +59,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit }) => {
               />
             </div>
             <div>
-              <label htmlFor="lastName" className={labelClasses}>Last Name *</label>
+              <label htmlFor="lastName" className={labelClasses}>Last Name</label>
               <input
                 type="text"
                 id="lastName"
@@ -75,7 +74,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit }) => {
           </div>
 
           <div>
-            <label htmlFor="email" className={labelClasses}>Work Email *</label>
+            <label htmlFor="email" className={labelClasses}>Work Email</label>
             <input
               type="email"
               id="email"
@@ -89,7 +88,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit }) => {
           </div>
 
           <div>
-            <label htmlFor="companyName" className={labelClasses}>Company Name *</label>
+            <label htmlFor="companyName" className={labelClasses}>Company Name</label>
             <input
               type="text"
               id="companyName"
@@ -98,11 +97,11 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit }) => {
               value={formData.companyName}
               onChange={handleChange}
               className={inputClasses}
-              placeholder="Acme Ltd"
+              placeholder="Acme Solutions"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <label htmlFor="jobTitle" className={labelClasses}>Job Title</label>
               <select
@@ -137,7 +136,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit }) => {
             </div>
           </div>
 
-          <div className="bg-white/5 p-4 rounded-lg border border-white/5">
+          <div className="bg-white/5 p-6 rounded-2xl border border-white/5">
             <div className="flex items-start">
               <input
                 id="gdprConsent"
@@ -146,15 +145,15 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit }) => {
                 required
                 checked={formData.gdprConsent}
                 onChange={handleChange}
-                className="mt-1 h-4 w-4 rounded border-white/10 bg-white/5 text-ignite-orange focus:ring-ignite-orange"
+                className="mt-1.5 h-5 w-5 rounded-md border-white/10 bg-white/5 text-orange-600 focus:ring-orange-500 cursor-pointer"
               />
-              <label htmlFor="gdprConsent" className="ml-3 text-xs text-gray-400 leading-relaxed">
-                I agree to receive my AI Readiness Report and occasional AI insights via email. I can unsubscribe at any time. <a href="#" className="text-ignite-orange hover:underline">Privacy Policy</a>.
+              <label htmlFor="gdprConsent" className="ml-4 text-sm text-secondary leading-relaxed cursor-pointer">
+                I agree to receive my AI Readiness Report and occasional AI strategy insights. <a href="#" className="text-orange-500 hover:underline font-bold">Privacy Policy</a>.
               </label>
             </div>
           </div>
 
-          <Button type="submit" fullWidth>
+          <Button type="submit" fullWidth className="py-5 shadow-xl">
             Start Assessment
           </Button>
         </form>

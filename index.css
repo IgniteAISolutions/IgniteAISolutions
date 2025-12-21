@@ -3,56 +3,148 @@
 @tailwind utilities;
 
 :root {
+  /* Brand Colors - Dark Mode */
   --bg-dark: #0B0F19;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  
+  /* Text Colors - High Contrast */
+  --text-primary: #FFFFFF;
+  --text-secondary: #E2E8F0;
+  --text-muted: #94A3B8;
+
+  /* Ignite Theme: Orange to Red */
+  --gradient-accent: linear-gradient(135deg, #F97316 0%, #DC2626 100%);
+  --gradient-hover: linear-gradient(135deg, #EA580C 0%, #B91C1C 100%);
+
+  /* Typography */
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
+/* Base Reset & Typography */
 body {
+  font-family: var(--font-sans);
+  color: #ffffff; /* Forced white text */
+  line-height: 1.6;
   background-color: var(--bg-dark);
-  color: white;
-  @apply antialiased;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  overflow-x: hidden;
 }
 
-.glass-panel {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.text-gradient {
-  background: linear-gradient(to right, #ffffff, #ed8936);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.btn-primary {
-  background: #ed8936;
-  color: white;
+h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  color: #ffffff; /* Forced white headings */
+  letter-spacing: -0.02em;
+}
+
+h1 { font-size: clamp(3rem, 5vw, 4rem); }
+h2 { font-size: clamp(2rem, 4vw, 3rem); }
+h3 { font-size: clamp(1.5rem, 3vw, 2rem); }
+
+p {
+  color: #E2E8F0; /* High contrast light grey */
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glass);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.glass-nav {
+  background: rgba(11, 15, 25, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-glass);
+}
+
+/* Button Styles - Pill Shape & Gradients */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50px; /* Pill shape */
+  font-weight: 600;
+  background: var(--gradient-accent);
+  color: #ffffff; /* White text for buttons */
+  padding: 0.75rem 2rem;
   transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .btn-primary:hover {
-  background: #f6993f;
+  background: var(--gradient-hover);
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px -10px rgba(237, 137, 54, 0.5);
+  box-shadow: 0 0 30px rgba(249, 115, 22, 0.5);
+  color: #ffffff;
 }
 
-.blend-screen {
-  mix-blend-mode: screen;
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-glass);
+  color: #ffffff; /* White text for buttons */
+  padding: 0.75rem 2rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
 }
 
-@media print {
-  body { background: white !important; color: black !important; }
-  .print\:hidden { display: none !important; }
-  .page-break-before-always { page-break-before: always; }
-  .glass-panel { 
-    background: white !important; 
-    border: 1px solid #eee !important; 
-    color: black !important; 
-    backdrop-filter: none !important;
-  }
-  .text-gradient { 
-    -webkit-text-fill-color: #1a365d !important; 
-    background: none !important;
-  }
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* Text Gradient Utility */
+.text-gradient {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
+
+/* Custom Table Styles for Dark Mode */
+.dark-table th {
+  background: rgba(255,255,255,0.05);
+  color: #ffffff;
+}
+.dark-table td {
+  border-bottom: 1px solid var(--border-glass);
+  color: #E2E8F0;
+}
+.dark-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Custom Range/Progress Colors */
+.progress-bar-fill {
+  background: var(--gradient-accent);
+  box-shadow: 0 0 15px rgba(249, 115, 22, 0.4);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
 }
