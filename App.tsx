@@ -73,9 +73,8 @@ const App: React.FC = () => {
           </div>
           
           <div className="hidden md:flex items-center space-x-10">
-            <span className="text-[10px] font-black text-muted uppercase tracking-[0.5em] opacity-50">Enterprise Edition v2.1</span>
             <div className="h-5 w-px bg-white/10"></div>
-            <a href="https://ignite-ai.co.uk" className="text-xs font-black text-white hover:text-orange-500 transition-colors uppercase tracking-[0.2em]">Website</a>
+            <a href="https://ignite-ai.co.uk" className="text-xs font-black text-white hover:text-orange-500 transition-colors uppercase tracking-[0.2em]">Back to Website</a>
           </div>
         </div>
       </nav>
