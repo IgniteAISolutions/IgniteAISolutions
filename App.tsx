@@ -5,7 +5,6 @@ import Quiz from './components/Quiz';
 import Results from './components/Results';
 import { Step, LeadData, ScoreResult } from './types';
 import { calculateScores } from './utils/scoring';
-import { Flame } from 'lucide-react';
 
 const App: React.FC = () => {
   const [step, setStep] = useState<Step>('landing');
@@ -62,19 +61,29 @@ const App: React.FC = () => {
       {/* Premium Glass Navigation */}
       <nav className="sticky top-0 z-50 glass-nav print:hidden">
         <div className="max-w-7xl mx-auto px-6 sm:px-10 h-24 flex items-center justify-between">
+          
+          {/* Logo Section */}
           <div className="flex items-center space-x-4 group cursor-pointer" onClick={() => setStep('landing')}>
-            <div className="bg-orange-600 p-2 rounded-xl shadow-[0_0_30px_rgba(237,137,54,0.4)] group-hover:scale-110 transition-transform duration-300">
-               <Flame className="h-7 w-7 text-white fill-current" />
-            </div>
+            {/* Using Image from public folder */}
+            <img 
+              src="/spark-logo.png" 
+              alt="Ignite AI" 
+              className="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105" 
+            />
             <div className="flex flex-col">
               <span className="font-black text-2xl tracking-tighter text-white leading-none">IGNITE AI</span>
               <span className="text-[9px] font-bold text-muted uppercase tracking-[0.4em] mt-1">Readiness Scorecard</span>
             </div>
           </div>
           
-          <div className="hidden md:flex items-center space-x-10">
-            <div className="h-5 w-px bg-white/10"></div>
-            <a href="https://ignite-ai.co.uk" className="text-xs font-black text-white hover:text-orange-500 transition-colors uppercase tracking-[0.2em]">Back to Website</a>
+          {/* Right Side Navigation */}
+          <div className="hidden md:flex items-center space-x-6">
+            <a 
+              href="https://igniteaisolutions.co.uk" 
+              className="text-xs font-black text-white hover:text-orange-500 transition-all uppercase tracking-[0.2em] border border-white/20 px-6 py-3 rounded-full hover:bg-white/5"
+            >
+              Back to Main Website
+            </a>
           </div>
         </div>
       </nav>
@@ -87,29 +96,18 @@ const App: React.FC = () => {
         {step === 'results' && scoreResult && <Results score={scoreResult} />}
       </main>
 
-      {/* High-Contrast Footer */}
-      <footer className="border-t border-white/5 mt-32 py-20 bg-black/60 print:hidden relative z-10">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-12 md:space-y-0">
-            <div>
-               <div className="font-black text-white tracking-[0.3em] text-xl mb-4">IGNITE AI SOLUTIONS</div>
-               <p className="text-muted text-xs max-w-sm leading-relaxed font-medium">
-                 Helping UK SMEs navigate the human side of the AI revolution through high-impact strategy, cultural transformation, and human capability building.
-               </p>
+      {/* Footer - Matching Main Website Style */}
+      <footer className="border-t border-white/10 mt-32 py-16 bg-black/60 print:hidden relative z-10">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 text-center">
+            {/* Trust Badges - Text Placeholders (Replace with <img> tags if you have the files in /public) */}
+            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 mb-10 opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+                <span className="text-lg font-bold tracking-tight">FORBES</span>
+                <span className="text-lg font-bold tracking-tight">BRITISH VETERAN OWNED</span>
+                <span className="text-lg font-bold tracking-tight">ARMED FORCES COVENANT</span>
+                <span className="text-lg font-bold tracking-tight">KASP</span>
+                <span className="text-lg font-bold tracking-tight">IAOCAIO</span>
             </div>
-            
-            <div className="flex flex-col items-start md:items-end space-y-6">
-              <div className="flex flex-wrap gap-10 text-[10px] font-black uppercase tracking-[0.3em] text-muted">
-                <a href="#" className="hover:text-white transition-colors">Privacy</a>
-                <a href="#" className="hover:text-white transition-colors">Terms</a>
-                <a href="#" className="hover:text-white transition-colors">Contact</a>
-                <a href="#" className="hover:text-white transition-colors">Accessibility</a>
-              </div>
-              <p className="text-[10px] text-muted/40 font-bold uppercase tracking-widest">
-                © {new Date().getFullYear()} IGNITE AI SOLUTIONS LTD. ALL RIGHTS RESERVED.
-              </p>
-            </div>
-          </div>
+            <p className="text-gray-600 text-sm font-medium tracking-wide">© {new Date().getFullYear()} Ignite AI Solutions Ltd. Built for UK Business.</p>
         </div>
       </footer>
     </div>
