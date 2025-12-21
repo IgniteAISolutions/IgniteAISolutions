@@ -1,10 +1,9 @@
-
 import { Dimension, Question } from './types';
 
 export const CALENDLY_LINK = 'https://calendar.app.google/f9nffVGDVfQUwQvS8';
 
 export const QUESTIONS: Question[] = [
-  // DIMENSION 1: STRATEGY ALIGNMENT
+  // STRATEGY ALIGNMENT
   {
     id: 'q1',
     dimension: Dimension.StrategyAlignment,
@@ -38,8 +37,7 @@ export const QUESTIONS: Question[] = [
       { label: 'Name a specific problem with defined success criteria', score: 15 },
     ],
   },
-
-  // DIMENSION 2: LEADERSHIP BUY-IN
+  // LEADERSHIP BUY-IN
   {
     id: 'q4',
     dimension: Dimension.LeadershipBuyIn,
@@ -62,8 +60,7 @@ export const QUESTIONS: Question[] = [
       { label: 'Active - they champion AI, allocate resources, and remove blockers', score: 25 },
     ],
   },
-
-  // DIMENSION 3: CULTURAL READINESS
+  // CULTURAL READINESS
   {
     id: 'q6',
     dimension: Dimension.CulturalReadiness,
@@ -97,8 +94,7 @@ export const QUESTIONS: Question[] = [
       { label: 'Yes, we\'ve identified champions and they\'re already involved', score: 15 },
     ],
   },
-
-  // DIMENSION 4: DATA FOUNDATION
+  // DATA FOUNDATION
   {
     id: 'q9',
     dimension: Dimension.DataFoundation,
@@ -121,8 +117,7 @@ export const QUESTIONS: Question[] = [
       { label: 'Minutes - our data is well-organised and query-ready', score: 25 },
     ],
   },
-
-  // DIMENSION 5: SKILLS & CAPABILITY
+  // SKILLS & CAPABILITY
   {
     id: 'q11',
     dimension: Dimension.SkillsCapability,
@@ -145,8 +140,7 @@ export const QUESTIONS: Question[] = [
       { label: 'Yes - we already have staff experimenting with AI tools', score: 25 },
     ],
   },
-
-  // DIMENSION 6: GOVERNANCE & ETHICS
+  // GOVERNANCE & ETHICS
   {
     id: 'q13',
     dimension: Dimension.GovernanceEthics,
