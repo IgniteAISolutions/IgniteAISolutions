@@ -1,4 +1,7 @@
+
 import { Dimension, Question } from './types';
+
+export const CALENDLY_LINK = 'https://calendar.app.google/f9nffVGDVfQUwQvS8';
 
 export const QUESTIONS: Question[] = [
   // DIMENSION 1: STRATEGY ALIGNMENT
@@ -86,7 +89,7 @@ export const QUESTIONS: Question[] = [
   {
     id: 'q8',
     dimension: Dimension.CulturalReadiness,
-    text: 'Do you know who your potential AI "champions" are - the enthusiasts who would advocate for and support AI adoption?',
+    text: 'Do you know who your potential AI "champions" are?',
     options: [
       { label: 'No, we haven\'t identified anyone', score: 0 },
       { label: 'We have a vague sense but nothing formal', score: 5 },
@@ -110,11 +113,11 @@ export const QUESTIONS: Question[] = [
   {
     id: 'q10',
     dimension: Dimension.DataFoundation,
-    text: 'If you needed to pull customer, operational, or financial data for an AI project, how long would it take?',
+    text: 'If you needed to pull data for an AI project, how long would it take?',
     options: [
       { label: 'Weeks - it would require significant manual effort', score: 0 },
       { label: 'Days - we\'d need to combine multiple sources', score: 10 },
-      { label: 'Hours - we can access most data but may need some preparation', score: 20 },
+      { label: 'Hours - we can access most data but may need preparation', score: 20 },
       { label: 'Minutes - our data is well-organised and query-ready', score: 25 },
     ],
   },
@@ -134,10 +137,10 @@ export const QUESTIONS: Question[] = [
   {
     id: 'q12',
     dimension: Dimension.SkillsCapability,
-    text: 'Do you have staff who could be trained to build and manage AI solutions internally?',
+    text: 'Do you have staff who could manage AI solutions internally?',
     options: [
       { label: 'No - we lack technically-minded staff', score: 0 },
-      { label: 'Possibly - but they\'re fully committed to other work', score: 10 },
+      { label: 'Possibly - but they\'re fully committed elsewhere', score: 10 },
       { label: 'Yes - we have people who could develop these skills', score: 20 },
       { label: 'Yes - we already have staff experimenting with AI tools', score: 25 },
     ],
@@ -147,7 +150,7 @@ export const QUESTIONS: Question[] = [
   {
     id: 'q13',
     dimension: Dimension.GovernanceEthics,
-    text: 'Does your organisation have any AI usage policies or guidelines?',
+    text: 'Does your organisation have any AI usage policies?',
     options: [
       { label: 'No - we haven\'t addressed this yet', score: 0 },
       { label: 'Informal guidance exists but nothing documented', score: 5 },
@@ -158,7 +161,7 @@ export const QUESTIONS: Question[] = [
   {
     id: 'q14',
     dimension: Dimension.GovernanceEthics,
-    text: 'How clear is your organisation on what AI should and shouldn\'t do autonomously?',
+    text: 'How clear are your boundaries on autonomous AI actions?',
     options: [
       { label: 'Not clear at all - we haven\'t considered this', score: 0 },
       { label: 'We have general concerns but no defined boundaries', score: 5 },
@@ -169,12 +172,12 @@ export const QUESTIONS: Question[] = [
   {
     id: 'q15',
     dimension: Dimension.GovernanceEthics,
-    text: 'If an AI tool made a mistake that affected a customer, how confident are you in your ability to identify and correct it?',
+    text: 'Confidence in identifying and correcting an AI mistake:',
     options: [
       { label: 'Not confident - we\'d struggle to trace the issue', score: 0 },
       { label: 'Somewhat confident - we could probably find it eventually', score: 5 },
       { label: 'Fairly confident - we have some oversight processes', score: 10 },
-      { label: 'Very confident - we have clear audit trails and escalation paths', score: 15 },
+      { label: 'Very confident - we have clear audit trails', score: 15 },
     ],
   },
 ];
@@ -189,35 +192,58 @@ export const BENCHMARKS = {
   Overall: 37,
 };
 
+export const SCORE_BANDS = {
+  Foundation: {
+    description: "You are at the very beginning of your AI journey. Your primary risk is 'Shadow AI' where employees use tools without oversight, potentially exposing sensitive data.",
+    action: "Focus on establishing a basic AI policy and educating your leadership team on realistic AI capabilities."
+  },
+  Developing: {
+    description: "You have started exploring AI, but your initiatives are likely fragmented. You may be seeing 'pockets of excellence' that aren't scaling across the business.",
+    action: "Identify one high-impact business problem and create a structured pilot project with clear ROI metrics."
+  },
+  Established: {
+    description: "You have a solid base. Your leadership is engaged and you have basic data structures. The challenge now is moving from 'experimentation' to 'operationalisation'.",
+    action: "Formalise your AI roadmap and start building internal capabilities through targeted training for your champions."
+  },
+  Advanced: {
+    description: "You are ahead of 80% of UK SMEs. AI is becoming a competitive advantage. Your focus should be on sophisticated governance and scaling high-ROI applications.",
+    action: "Look into custom AI models or deep integration of AI into your core customer-facing products."
+  },
+  Leading: {
+    description: "You are an AI-first organisation. Your challenge is maintaining this lead and ensuring your ethical framework keeps pace with your rapid innovation.",
+    action: "Share your success stories and focus on building a sustainable, long-term AI R&D pipeline."
+  }
+};
+
 export const RECOMMENDATIONS: Record<Dimension, { title: string; text: string; question: string }> = {
   [Dimension.StrategyAlignment]: {
     title: 'Priority: Connect AI to Business Outcomes',
-    text: 'Your AI initiatives risk becoming expensive experiments without clear business impact. Before investing in any AI tools, define the specific problems you\'re solving and how you\'ll measure success.',
+    text: 'Your AI initiatives risk becoming expensive experiments without clear business impact. Before investing in any AI tools, define the specific problems you\'re solving.',
     question: 'What business metric will improve, by how much, in what timeframe?',
   },
   [Dimension.LeadershipBuyIn]: {
     title: 'Priority: Secure Executive Sponsorship',
-    text: 'AI transformation without active leadership support has a 70% failure rate. You need a senior sponsor with budget authority who will champion the initiative and remove blockers.',
+    text: 'AI transformation without active leadership support has a 70% failure rate. You need a senior sponsor with budget authority who will champion the initiative.',
     question: 'Who will fight for this project when you\'re not in the room?',
   },
   [Dimension.CulturalReadiness]: {
     title: 'Priority: Address Workforce Concerns',
-    text: 'Your team\'s attitudes toward AI could derail even well-planned initiatives. Understanding and addressing fears (especially around job security) is essential before implementation.',
+    text: 'Your team\'s attitudes toward AI could derail even well-planned initiatives. Understanding and addressing fears around job security is essential.',
     question: 'What concerns do your people have, and how will you address them?',
   },
   [Dimension.DataFoundation]: {
     title: 'Priority: Get Your Data House in Order',
-    text: 'AI is only as good as the data it learns from. Scattered, inconsistent, or inaccessible data will limit what\'s possible and increase project risk.',
+    text: 'AI is only as good as the data it learns from. Scattered, inconsistent, or inaccessible data will limit what\'s possible.',
     question: 'Can you access the data you need within hours, not weeks?',
   },
   [Dimension.SkillsCapability]: {
     title: 'Priority: Build Internal AI Capability',
-    text: 'Relying entirely on external expertise creates dependency and limits sustainable adoption. Identifying and developing internal champions is essential for long-term success.',
+    text: 'Relying entirely on external expertise creates dependency. Identifying and developing internal champions is essential for long-term success.',
     question: 'Who are your potential AI champions and how will you develop them?',
   },
   [Dimension.GovernanceEthics]: {
     title: 'Priority: Establish Clear AI Guardrails',
-    text: 'Without clear governance, you risk compliance issues, reputational damage, and the spread of uncontrolled "shadow AI" across your organisation.',
+    text: 'Without clear governance, you risk compliance issues, reputational damage, and the spread of uncontrolled "shadow AI".',
     question: 'What can AI do autonomously, and where must humans stay in the loop?',
   },
 };

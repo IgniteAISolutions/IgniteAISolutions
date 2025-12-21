@@ -45,7 +45,8 @@ export const calculateScores = (answers: Record<string, number>): ScoreResult =>
   const totalPercentage = Math.round((totalScore / MAX_TOTAL_SCORE) * 100);
 
   // 4. Determine Risk Level
-  let riskLevel = 'Foundation';
+  // Explicitly type riskLevel to satisfy the ScoreResult interface and prevent generic 'string' inference
+  let riskLevel: ScoreResult['riskLevel'] = 'Foundation';
   let color = 'text-red-600'; // Default red
 
   if (totalPercentage <= 25) {

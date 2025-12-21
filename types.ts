@@ -1,3 +1,4 @@
+
 export enum Dimension {
   StrategyAlignment = 'Strategy Alignment',
   LeadershipBuyIn = 'Leadership Buy-In',
@@ -26,14 +27,20 @@ export interface LeadData {
   companyName: string;
   jobTitle: string;
   turnover: string;
+  gdprConsent: boolean;
+  utm?: {
+    source?: string;
+    medium?: string;
+    campaign?: string;
+  };
 }
 
 export interface ScoreResult {
-  dimensionScores: Record<Dimension, number>; // Raw score (0-50)
-  dimensionPercentages: Record<Dimension, number>; // Percentage (0-100)
-  totalScore: number; // Max 300
-  totalPercentage: number; // 0-100
-  riskLevel: string;
+  dimensionScores: Record<Dimension, number>;
+  dimensionPercentages: Record<Dimension, number>;
+  totalScore: number;
+  totalPercentage: number;
+  riskLevel: 'Foundation' | 'Developing' | 'Established' | 'Advanced' | 'Leading';
   color: string;
 }
 

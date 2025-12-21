@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -12,12 +13,12 @@ const Button: React.FC<ButtonProps> = ({
   className = '', 
   ...props 
 }) => {
-  const baseStyles = "inline-flex items-center justify-center px-6 py-3 border text-base font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200";
+  const baseStyles = "inline-flex items-center justify-center px-8 py-4 text-sm font-bold uppercase tracking-wider rounded-md focus:outline-none transition-all duration-300";
   
   const variants = {
-    primary: "border-transparent text-white bg-ignite-navy hover:bg-ignite-blue focus:ring-ignite-navy shadow-lg",
-    secondary: "border-transparent text-white bg-ignite-orange hover:bg-orange-600 focus:ring-ignite-orange shadow-md",
-    outline: "border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-ignite-navy",
+    primary: "bg-ignite-orange text-white hover:bg-orange-500 hover:-translate-y-0.5 shadow-[0_10px_20px_-10px_rgba(237,137,54,0.5)] border-none",
+    secondary: "bg-white/10 text-white backdrop-blur-md hover:bg-white/20 border border-white/10",
+    outline: "border border-white/20 text-white bg-transparent hover:bg-white/5",
   };
 
   const widthStyle = fullWidth ? "w-full" : "";
