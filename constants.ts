@@ -1,7 +1,7 @@
 // constants.ts
 import { Dimension, Segment, Question } from './types';
 
-export const BOOKING_LINK = 'https://calendar.app.google/hGxdJJmx2T29Re4n6';
+export const CALENDLY_LINK = 'https://calendar.app.google/hGxdJJmx2T29Re4n6';
 
 // Dimension weights for overall score calculation
 export const DIMENSION_WEIGHTS: Record<Dimension, number> = {
