@@ -1,105 +1,101 @@
 import React, { useState } from 'react';
-import { QUESTIONS } from '../utils/constants';
+import { QUESTIONS } from '../utils/constants'; // Note: Ensure this import path is correct
 import Button from './Button';
 import ProgressBar from './ProgressBar';
-import { ArrowLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 interface QuizProps {
   onComplete: (answers: Record<string, number>) => void;
 }
 
 const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentInfoIndex, setCurrentInfoIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
 
-  const currentQuestion = QUESTIONS[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === QUESTIONS.length - 1;
+  const question = QUESTIONS[currentInfoIndex];
+  const progress = ((currentInfoIndex + 1) / QUESTIONS.length) * 100;
 
   const handleOptionSelect = (score: number) => {
-    setSelectedOption(score);
-  };
-
-  const handleNext = () => {
-    if (selectedOption === null) return;
-
-    const newAnswers = { ...answers, [currentQuestion.id]: selectedOption };
+    setSlideDirection('right');
+    const newAnswers = { ...answers, [question.id]: score };
     setAnswers(newAnswers);
-    setSelectedOption(null);
 
-    if (isLastQuestion) {
-      onComplete(newAnswers);
+    if (currentInfoIndex < QUESTIONS.length - 1) {
+      setTimeout(() => setCurrentInfoIndex(prev => prev + 1), 250); // Small delay for visual feedback
     } else {
-      setCurrentQuestionIndex((prev) => prev + 1);
+      onComplete(newAnswers);
     }
   };
-  
+
   const handleBack = () => {
-     if (currentQuestionIndex > 0) {
-        setCurrentQuestionIndex(prev => prev - 1);
-        setSelectedOption(null); 
-     }
+    if (currentInfoIndex > 0) {
+      setSlideDirection('left');
+      setCurrentInfoIndex(prev => prev - 1);
+    }
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-16 animate-fade-in">
-      <ProgressBar current={currentQuestionIndex + 1} total={QUESTIONS.length} />
-
-      <div className="glass-panel p-8 sm:p-12 relative min-h-[600px] flex flex-col">
-        <div className="mb-6 inline-block bg-orange-600/10 text-orange-500 text-[10px] font-black uppercase tracking-[0.3em] px-4 py-1.5 rounded-full border border-orange-500/20">
-          {currentQuestion.dimension}
+    <div className="w-full max-w-4xl mx-auto px-6 py-12 flex flex-col min-h-[80vh]">
+      
+      {/* PROGRESS BAR */}
+      <div className="mb-12">
+        <div className="flex justify-between text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">
+          <span>Question {currentInfoIndex + 1} of {QUESTIONS.length}</span>
+          <span>{question.dimension}</span>
         </div>
-        
-        <h2 className="text-2xl md:text-4xl font-extrabold text-white mb-12 leading-tight">
-          {currentQuestion.text}
+        <ProgressBar progress={progress} />
+      </div>
+
+      {/* QUESTION AREA */}
+      <div key={currentInfoIndex} className="flex-grow flex flex-col justify-center animate-fade-in">
+        <h2 className="text-3xl md:text-4xl font-black text-white mb-10 leading-tight">
+          {question.text}
         </h2>
 
-        <div className="space-y-5 flex-grow">
-          {currentQuestion.options.map((option, idx) => {
-            const isSelected = selectedOption === option.score;
+        <div className="grid grid-cols-1 gap-4">
+          {question.options.map((option, idx) => {
+            const isSelected = answers[question.id] === option.score;
             return (
               <button
                 key={idx}
                 onClick={() => handleOptionSelect(option.score)}
-                className={`w-full text-left p-6 rounded-2xl border transition-all duration-300 group ${
-                  isSelected
-                    ? 'border-orange-500 bg-orange-600/10 text-white shadow-[0_0_20px_rgba(249,115,22,0.15)]'
-                    : 'border-white/10 hover:border-white/30 hover:bg-white/5 text-secondary'
-                }`}
+                className={`
+                  w-full text-left p-6 md:p-8 rounded-xl border-2 transition-all duration-200 group relative overflow-hidden
+                  ${isSelected 
+                    ? 'bg-orange-500 border-orange-500 text-white shadow-lg shadow-orange-500/20' 
+                    : 'bg-white/5 border-white/10 text-gray-300 hover:border-orange-500/50 hover:bg-white/10'
+                  }
+                `}
               >
-                <div className="flex items-center">
-                  <div className={`w-6 h-6 rounded-full border flex items-center justify-center mr-5 transition-all duration-300 ${
-                      isSelected ? 'border-orange-500 bg-orange-500' : 'border-white/20 group-hover:border-white/40'
-                  }`}>
-                      {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-white shadow-sm" />}
+                <div className="flex items-center gap-6 relative z-10">
+                  <div className={`
+                    w-8 h-8 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors
+                    ${isSelected ? 'border-white bg-white text-orange-500' : 'border-gray-500 text-transparent group-hover:border-orange-500'}
+                  `}>
+                    {isSelected && <div className="w-3 h-3 bg-current rounded-full" />}
                   </div>
-                  <span className={`text-lg font-semibold transition-colors ${isSelected ? 'text-white' : 'text-secondary'}`}>
-                    {option.label}
-                  </span>
+                  <span className="text-lg md:text-xl font-medium">{option.label}</span>
                 </div>
               </button>
             );
           })}
         </div>
+      </div>
 
-        <div className="mt-16 flex justify-between items-center pt-10 border-t border-white/10">
-           <button 
-             onClick={handleBack}
-             disabled={currentQuestionIndex === 0}
-             className={`flex items-center text-xs font-bold uppercase tracking-[0.2em] transition-all ${
-                 currentQuestionIndex === 0 ? 'opacity-0 pointer-events-none' : 'text-muted hover:text-white'
-             }`}
-           >
-               <ArrowLeft className="w-4 h-4 mr-2" /> Back
-           </button>
-          <Button
-            onClick={handleNext}
-            disabled={selectedOption === null}
-            className={`min-w-[180px] shadow-lg ${selectedOption === null ? 'opacity-30 cursor-not-allowed' : ''}`}
-          >
-            {isLastQuestion ? 'View Results' : 'Continue'} <ChevronRight className="ml-2 w-5 h-5" />
-          </Button>
-        </div>
+      {/* NAVIGATION CONTROLS */}
+      <div className="mt-12 flex justify-between items-center border-t border-white/10 pt-8">
+        <button 
+          onClick={handleBack}
+          disabled={currentInfoIndex === 0}
+          className={`flex items-center gap-2 text-sm font-bold uppercase tracking-widest transition-colors ${currentInfoIndex === 0 ? 'text-gray-700 cursor-not-allowed' : 'text-gray-400 hover:text-white'}`}
+        >
+          <ArrowLeft className="w-4 h-4" /> Previous
+        </button>
+        
+        <span className="text-gray-600 text-xs hidden md:block">
+           Ignite AI Readiness Scorecard
+        </span>
       </div>
     </div>
   );
