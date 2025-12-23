@@ -1,6 +1,6 @@
 import { Dimension, Segment, Question } from '../types';
 
-export const CALENDLY_LINK = 'https://calendar.app.google/hGxdJJmx2T29Re4n6';
+export const BOOKING_LINK = 'https://calendar.app.google/hGxdJJmx2T29Re4n6';
 
 export const DIMENSION_WEIGHTS: Record<Dimension, number> = {
   [Dimension.LeadershipGravity]: 0.20,
