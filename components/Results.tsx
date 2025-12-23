@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScoreResult, Dimension } from '../types';
-import { RECOMMENDATIONS, SCORE_BANDS, CALENDLY_LINK } from '../constants';
+import { RECOMMENDATIONS, SCORE_BANDS, SEGMENT_MESSAGING, BOOKING_LINK, getScoreBand } from '../constants';
 import Button from './Button';
 import {
   Radar,
@@ -10,202 +10,236 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from 'recharts';
-import { Download, CheckCircle, ChevronRight, Share2, Calendar, TrendingUp } from 'lucide-react';
+import { CheckCircle, ChevronRight, Calendar, TrendingUp, Target, Zap, ArrowRight } from 'lucide-react';
 
 interface ResultsProps {
   score: ScoreResult;
 }
 
 const Results: React.FC<ResultsProps> = ({ score }) => {
-  // Only mapping 'You' data now to remove the fake benchmark
   const radarData = Object.keys(score.dimensionPercentages).map((key) => {
     const dim = key as Dimension;
     return {
-      subject: dim,
-      You: score.dimensionPercentages[dim],
+      subject: dim.replace('Leadership Gravity', 'Leadership')
+                  .replace('Cultural Resilience', 'Culture')
+                  .replace('Skill Visibility', 'Skills')
+                  .replace('Champion Density', 'Champions')
+                  .replace('Governance Confidence', 'Governance')
+                  .replace('Capacity Direction', 'Direction'),
+      fullName: dim,
+      score: score.dimensionPercentages[dim],
       fullMark: 100,
     };
   });
 
-  const sortedDimensions = (Object.entries(score.dimensionPercentages) as [Dimension, number][])
-    .sort(([, a], [, b]) => a - b)
-    .slice(0, 3);
-
   const bandInfo = SCORE_BANDS[score.riskLevel];
-
-  const handleDownload = () => {
-    window.print();
-  };
+  const weakestRec = RECOMMENDATIONS[score.weakestDimension];
+  const segmentInfo = SEGMENT_MESSAGING[score.segment];
+  
+  // Calculate gap for weakest dimension
+  const weakestScore = score.dimensionPercentages[score.weakestDimension];
+  const gap = 80 - weakestScore; // Gap to "Ready" threshold
 
   const handleBookCall = () => {
-    window.open(CALENDLY_LINK, '_blank');
+    window.open(BOOKING_LINK, '_blank');
+  };
+
+  // Get colour based on score
+  const getScoreColour = (pct: number): string => {
+    if (pct >= 66) return 'text-green-400';
+    if (pct >= 46) return 'text-yellow-400';
+    return 'text-red-400';
+  };
+
+  const getRiskColour = (level: string): string => {
+    if (level === 'Strong' || level === 'Ready') return 'bg-green-500/20 text-green-400 border-green-500/30';
+    if (level === 'Building') return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+    return 'bg-red-500/20 text-red-400 border-red-500/30';
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in print:p-0">
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
       
       {/* HEADER */}
-      <div className="text-center mb-16 print:mb-8 print:text-left">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold uppercase tracking-widest mb-6 print:hidden">
+      <div className="text-center mb-12">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold uppercase tracking-widest mb-6">
           <CheckCircle className="w-3 h-3" /> Assessment Complete
         </div>
-        <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight mb-4 print:text-4xl">
-          Your Strategic <br className="hidden md:block" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-600 print:text-black">
-            Readiness Profile
-          </span>
+        <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-4">
+          Your Human Capability Score
         </h1>
+        <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+          {segmentInfo.headline}
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+      {/* SCORE + RISK LEVEL */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
         
         {/* SCORE CARD */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
-          <div className="glass-panel p-8 md:p-10 flex flex-col items-center justify-center text-center relative overflow-hidden border-t-4 border-t-orange-500 h-full">
-            <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.3em] mb-4">Readiness Index</h3>
-            
-            <div className="relative mb-6">
-              <span className="text-8xl md:text-9xl font-black text-white tracking-tighter print:text-6xl">
-                {score.totalPercentage}
-              </span>
-              <span className="absolute top-4 -right-8 text-4xl text-orange-500 font-bold">%</span>
-            </div>
-
-            <div className="inline-block px-6 py-2 rounded-lg bg-white/5 border border-white/10 mb-8 print:border-gray-300">
-              <span className="text-xl font-bold text-white tracking-wide">
-                {score.riskLevel}
-              </span>
-            </div>
-
-            <p className="text-gray-400 text-sm italic border-t border-white/10 pt-6 mt-2">
-              "{bandInfo.description}"
-            </p>
+        <div className="glass-panel p-8 flex flex-col items-center justify-center text-center border-t-4 border-t-orange-500">
+          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Overall Score</h3>
+          
+          <div className="relative mb-4">
+            <span className={`text-7xl md:text-8xl font-black tracking-tighter ${getScoreColour(score.totalPercentage)}`}>
+              {score.totalPercentage}
+            </span>
+            <span className="absolute top-2 -right-6 text-2xl text-gray-500 font-bold">%</span>
           </div>
+
+          <div className={`inline-block px-5 py-2 rounded-lg border mb-6 ${getRiskColour(score.riskLevel)}`}>
+            <span className="text-sm font-bold uppercase tracking-wide">
+              {score.riskLevel}
+            </span>
+          </div>
+
+          <p className="text-gray-400 text-sm leading-relaxed">
+            {bandInfo.description}
+          </p>
         </div>
 
-        {/* CHART SECTION */}
-        <div className="lg:col-span-7">
-          <div className="glass-panel p-6 h-full min-h-[500px] flex flex-col justify-between relative">
-             <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-orange-500" /> Dimension Analysis
-                </h3>
-             </div>
-             
-             {/* WEB CHART (Hidden on Print) */}
-             <div className="flex-grow w-full h-full relative print:hidden">
-                <ResponsiveContainer width="100%" height="100%" minHeight={400}>
-                  <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
-                    <PolarGrid stroke="rgba(255,255,255,0.1)" />
-                    <PolarAngleAxis 
-                      dataKey="subject" 
-                      tick={{ fill: '#94A3B8', fontSize: 11, fontWeight: 700 }} 
-                    />
-                    <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                    <Radar
-                      name="Your Score"
-                      dataKey="You"
-                      stroke="#F97316"
-                      strokeWidth={3}
-                      fill="#F97316"
-                      fillOpacity={0.6}
-                    />
-                  </RadarChart>
-                </ResponsiveContainer>
-             </div>
+        {/* RADAR CHART */}
+        <div className="glass-panel p-6 flex flex-col">
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-orange-500" /> Dimension Breakdown
+          </h3>
+          
+          <div className="flex-grow w-full min-h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+                <PolarGrid stroke="rgba(255,255,255,0.1)" />
+                <PolarAngleAxis 
+                  dataKey="subject" 
+                  tick={{ fill: '#94A3B8', fontSize: 11, fontWeight: 600 }} 
+                />
+                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                <Radar
+                  name="Your Score"
+                  dataKey="score"
+                  stroke="#F97316"
+                  strokeWidth={2}
+                  fill="#F97316"
+                  fillOpacity={0.5}
+                />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
 
-             {/* PRINT FALLBACK TABLE (Visible only on Print) */}
-             <div className="hidden print:block w-full mt-4">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-gray-300">
-                      <th className="py-2 text-sm font-bold text-black uppercase">Dimension</th>
-                      <th className="py-2 text-sm font-bold text-black uppercase text-right">Score</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {radarData.map((item, idx) => (
-                      <tr key={idx} className="border-b border-gray-100">
-                        <td className="py-2 text-sm text-black">{item.subject}</td>
-                        <td className="py-2 text-sm font-bold text-black text-right">{item.You}%</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-             </div>
+          {/* Dimension scores list */}
+          <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-white/10">
+            {radarData.map((item, idx) => (
+              <div key={idx} className="flex justify-between items-center text-sm">
+                <span className="text-gray-400">{item.subject}</span>
+                <span className={`font-bold ${getScoreColour(item.score)}`}>{item.score}%</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      <div className="page-break-before-always"></div>
+      {/* SEGMENT INSIGHT */}
+      <div className="glass-panel p-8 mb-12 border-l-4 border-l-orange-500">
+        <p className="text-gray-300 leading-relaxed">
+          {segmentInfo.insight}
+        </p>
+      </div>
 
-      {/* PRIORITIES SECTION */}
-      <div className="mb-20">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 pb-4 border-b border-white/10">
-          <div>
-             <h2 className="text-3xl md:text-4xl font-black text-white mb-2">Priority Actions</h2>
-             <p className="text-gray-400">Your most critical gaps to address first.</p>
-          </div>
+      {/* PRIORITY ACTION - Single Focus */}
+      <div className="mb-12">
+        <div className="flex items-center gap-3 mb-6">
+          <Target className="w-6 h-6 text-orange-500" />
+          <h2 className="text-2xl font-black text-white">Your #1 Priority</h2>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {sortedDimensions.map(([dim], idx) => {
-            const rec = RECOMMENDATIONS[dim];
+        <div className="glass-panel p-8 border border-orange-500/30 bg-orange-500/5">
+          <div className="flex flex-col md:flex-row md:items-start gap-6">
             
-            return (
-              <div key={idx} className="glass-panel p-8 flex flex-col h-full border hover:border-orange-500/50 transition-all duration-300 group">
-                <div className="flex justify-between items-start mb-6">
-                   <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{dim}</span>
-                   <span className="text-[10px] font-bold text-white bg-orange-600 px-3 py-1 rounded-full">
-                     PRIORITY #{idx + 1}
-                   </span>
-                </div>
-
-                <h4 className="font-bold text-xl text-white mb-4 group-hover:text-orange-400 transition-colors">
-                  {rec.title}
-                </h4>
-                
-                <p className="text-gray-400 text-sm leading-relaxed mb-8 flex-grow">
-                  {rec.text}
-                </p>
-
-                <div className="pt-6 border-t border-white/5 mt-auto">
-                   <p className="text-[10px] font-bold text-orange-500 uppercase tracking-wider mb-2">Critical Question</p>
-                   <p className="text-sm text-white italic font-medium">"{rec.question}"</p>
-                </div>
+            <div className="flex-grow">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-xs font-bold text-orange-400 uppercase tracking-widest">
+                  {score.weakestDimension}
+                </span>
+                <span className="text-xs text-gray-500">•</span>
+                <span className="text-xs text-gray-500">
+                  Gap: {gap > 0 ? `${gap} points to Ready` : 'Above threshold'}
+                </span>
               </div>
-            );
-          })}
+              
+              <h3 className="text-xl font-bold text-white mb-3">
+                {weakestRec.title}
+              </h3>
+              
+              <p className="text-gray-400 text-sm leading-relaxed mb-6">
+                {weakestRec.text}
+              </p>
+
+              <div className="bg-white/5 rounded-lg p-4 mb-6">
+                <p className="text-xs font-bold text-orange-500 uppercase tracking-wider mb-2">
+                  The Question You Need to Answer
+                </p>
+                <p className="text-white font-medium">
+                  "{weakestRec.question}"
+                </p>
+              </div>
+
+              <div className="bg-orange-500/10 rounded-lg p-4 border border-orange-500/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-4 h-4 text-orange-400" />
+                  <p className="text-xs font-bold text-orange-400 uppercase tracking-wider">
+                    Monday Action
+                  </p>
+                </div>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  {weakestRec.mondayAction}
+                </p>
+              </div>
+            </div>
+
+            <div className="md:w-32 flex-shrink-0 flex md:flex-col items-center justify-center gap-2 text-center">
+              <div className={`text-5xl font-black ${getScoreColour(weakestScore)}`}>
+                {weakestScore}%
+              </div>
+              <div className="text-xs text-gray-500 uppercase tracking-wider">
+                Current
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* WEB CTA (Hidden on Print) */}
-      <div className="print:hidden relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 to-black border border-white/10 p-10 md:p-16 text-center">
-          <div className="relative z-10 max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-6">
-              Turn Insight Into <span className="text-orange-500">Action.</span>
-            </h2>
-            <div className="flex flex-col sm:flex-row justify-center gap-6 mt-10">
-               <Button onClick={handleBookCall} className="text-lg px-8 py-4 shadow-xl shadow-orange-900/20">
-                  <Calendar className="w-5 h-5 mr-2" /> Book Strategy Call
-               </Button>
-               <Button onClick={handleDownload} variant="secondary" className="text-lg px-8 py-4 bg-white/5 hover:bg-white/10 border-white/10">
-                  <Download className="w-5 h-5 mr-2" /> Download Report
-               </Button>
-            </div>
-            
-            <div className="mt-12 flex justify-center items-center gap-8 text-gray-500">
-              <button onClick={() => window.location.reload()} className="flex items-center text-xs font-bold uppercase tracking-widest hover:text-white transition-colors">
-                <ChevronRight className="w-4 h-4 mr-1" /> Restart
-              </button>
-            </div>
-          </div>
+      {/* NEXT STEP - SPARK Positioning */}
+      <div className="glass-panel p-8 md:p-10 text-center border border-white/10">
+        <h2 className="text-2xl md:text-3xl font-black text-white mb-4">
+          This Assessment Covers the Human Side
+        </h2>
+        <p className="text-gray-400 max-w-2xl mx-auto mb-6 leading-relaxed">
+          {segmentInfo.sparkPosition}
+        </p>
+        
+        <div className="bg-white/5 rounded-lg p-6 max-w-xl mx-auto mb-8">
+          <p className="text-sm text-gray-400 mb-2">Next step recommendation:</p>
+          <p className="text-white font-medium">
+            {bandInfo.action}
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <Button onClick={handleBookCall} className="text-base px-6 py-3">
+            <Calendar className="w-4 h-4 mr-2" /> Book a 30-Minute Call
+          </Button>
+          <Button 
+            onClick={() => window.location.reload()} 
+            variant="secondary" 
+            className="text-base px-6 py-3 bg-white/5 hover:bg-white/10 border-white/10"
+          >
+            <ArrowRight className="w-4 h-4 mr-2" /> Retake Assessment
+          </Button>
+        </div>
       </div>
 
-      {/* PRINT FOOTER */}
-      <div className="hidden print:block text-center mt-12 pt-8 border-t border-gray-200">
-          <p className="text-lg font-bold text-black">Ignite AI Solutions</p>
-          <p className="text-sm text-gray-600 mt-1">Generated on {new Date().toLocaleDateString()}</p>
+      {/* FOOTER */}
+      <div className="text-center mt-12 text-gray-500 text-sm">
+        <p>Ignite AI Solutions Ltd • {new Date().toLocaleDateString('en-GB')}</p>
       </div>
 
     </div>
