@@ -35,14 +35,15 @@ const App: React.FC = () => {
     setLeadData(completeLead);
 
     // --- GHL WEBHOOK INTEGRATION (FIXED) ---
-    // This maps your specific fields to generic CRM fields to prevent build errors
+    // The build failed because 'data.name' and 'data.company' do not exist.
+    // We must map them from the correct fields:
     const payload = {
-      name: `${data.firstName} ${data.lastName}`, // Concatenates first and last name for CRM
+      name: `${data.firstName} ${data.lastName}`, // Combine names for CRM
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
-      company: data.companyName, // Maps companyName -> company
-      role: data.jobTitle,       // Maps jobTitle -> role
+      company: data.companyName, // Correct field: companyName
+      role: data.jobTitle,       // Correct field: jobTitle
       turnover: data.turnover,
       source: 'AI Readiness Scorecard',
       ...utmParams
