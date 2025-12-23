@@ -1,4 +1,3 @@
-// constants.ts
 import { Dimension, Segment, Question } from './types';
 
 export const CALENDLY_LINK = 'https://calendar.app.google/hGxdJJmx2T29Re4n6';
