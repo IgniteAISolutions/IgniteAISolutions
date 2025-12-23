@@ -1,47 +1,44 @@
+// types.ts
 
 export enum Dimension {
-  StrategyAlignment = 'Strategy Alignment',
-  LeadershipBuyIn = 'Leadership Buy-In',
-  CulturalReadiness = 'Cultural Readiness',
-  DataFoundation = 'Data Foundation',
-  SkillsCapability = 'Skills & Capability',
-  GovernanceEthics = 'Governance & Ethics',
+  LeadershipGravity = 'Leadership Gravity',
+  CulturalResilience = 'Cultural Resilience',
+  SkillVisibility = 'Skill Visibility',
+  ChampionDensity = 'Champion Density',
+  GovernanceConfidence = 'Governance Confidence',
+  CapacityDirection = 'Capacity Direction',
 }
 
-export interface Option {
+// Segmentation based on Q6 answer
+export enum Segment {
+  UNSURE = 'UNSURE',
+  EXPLORING = 'EXPLORING',
+  EXPERIMENTING = 'EXPERIMENTING',
+  PILOTING = 'PILOTING',
+  SCALING = 'SCALING',
+  EMBEDDED = 'EMBEDDED',
+}
+
+export interface QuestionOption {
   label: string;
   score: number;
+  segment?: Segment; // Only used for Q6
 }
 
 export interface Question {
   id: string;
   dimension: Dimension;
   text: string;
-  options: Option[];
-}
-
-export interface LeadData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  companyName: string;
-  jobTitle: string;
-  turnover: string;
-  gdprConsent: boolean;
-  utm?: {
-    source?: string;
-    medium?: string;
-    campaign?: string;
-  };
+  options: QuestionOption[];
+  isSegmentQuestion?: boolean; // Flags Q6 for special handling
 }
 
 export interface ScoreResult {
+  totalPercentage: number;
   dimensionScores: Record<Dimension, number>;
   dimensionPercentages: Record<Dimension, number>;
-  totalScore: number;
-  totalPercentage: number;
-  riskLevel: 'Foundation' | 'Developing' | 'Established' | 'Advanced' | 'Leading';
-  color: string;
+  riskLevel: string;
+  segment: Segment;
+  strongestDimension: Dimension;
+  weakestDimension: Dimension;
 }
-
-export type Step = 'landing' | 'lead-capture' | 'quiz' | 'results';
