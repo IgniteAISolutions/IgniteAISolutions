@@ -1,77 +1,161 @@
-import { Dimension, Question, ScoreResult } from '../types';
-import { QUESTIONS } from '../constants';
+// scoring.ts
+import { Dimension, Segment, ScoreResult } from './types';
+import { 
+  QUESTIONS, 
+  DIMENSION_WEIGHTS, 
+  DIMENSION_PRIORITY,
+  getScoreBand 
+} from './constants';
 
-export const calculateScores = (answers: Record<string, number>): ScoreResult => {
-  const dimensionScores: Record<Dimension, number> = {
-    [Dimension.StrategyAlignment]: 0,
-    [Dimension.LeadershipBuyIn]: 0,
-    [Dimension.CulturalReadiness]: 0,
-    [Dimension.DataFoundation]: 0,
-    [Dimension.SkillsCapability]: 0,
-    [Dimension.GovernanceEthics]: 0,
+// Answer format: Record<questionId, selectedOptionIndex>
+type Answers = Record<string, number>;
+
+/**
+ * Calculate dimension scores from answers
+ * Each dimension is normalised to 0-100 regardless of question count
+ */
+export function calculateDimensionScores(answers: Answers): Record<Dimension, number> {
+  // Group questions by dimension
+  const dimensionQuestions: Record<Dimension, typeof QUESTIONS> = {
+    [Dimension.LeadershipGravity]: [],
+    [Dimension.CulturalResilience]: [],
+    [Dimension.SkillVisibility]: [],
+    [Dimension.ChampionDensity]: [],
+    [Dimension.GovernanceConfidence]: [],
+    [Dimension.CapacityDirection]: [],
   };
 
-  // 1. Sum raw scores
-  Object.entries(answers).forEach(([questionId, score]) => {
-    const question = QUESTIONS.find((q) => q.id === questionId);
-    if (question) {
-      dimensionScores[question.dimension] += score;
+  QUESTIONS.forEach(q => {
+    dimensionQuestions[q.dimension].push(q);
+  });
+
+  // Calculate score for each dimension
+  const dimensionScores: Record<Dimension, number> = {} as Record<Dimension, number>;
+
+  for (const dimension of Object.values(Dimension)) {
+    const questions = dimensionQuestions[dimension];
+    
+    if (questions.length === 0) {
+      dimensionScores[dimension] = 0;
+      continue;
     }
-  });
 
-  // 2. Convert to percentages
-  // Each dimension has a max score of 50 based on the question set provided.
-  const MAX_DIMENSION_SCORE = 50;
-  
-  const dimensionPercentages: Record<Dimension, number> = {
-    [Dimension.StrategyAlignment]: 0,
-    [Dimension.LeadershipBuyIn]: 0,
-    [Dimension.CulturalReadiness]: 0,
-    [Dimension.DataFoundation]: 0,
-    [Dimension.SkillsCapability]: 0,
-    [Dimension.GovernanceEthics]: 0,
-  };
+    // Sum the scores for this dimension
+    let totalScore = 0;
+    let maxPossible = 0;
 
-  let totalScore = 0;
+    questions.forEach(q => {
+      const answerIndex = answers[q.id];
+      if (answerIndex !== undefined && q.options[answerIndex]) {
+        totalScore += q.options[answerIndex].score;
+      }
+      // Max possible is the highest score option
+      const maxOption = Math.max(...q.options.map(o => o.score));
+      maxPossible += maxOption;
+    });
 
-  Object.entries(dimensionScores).forEach(([key, value]) => {
-    const dimension = key as Dimension;
-    dimensionPercentages[dimension] = Math.round((value / MAX_DIMENSION_SCORE) * 100);
-    totalScore += value;
-  });
-
-  // 3. Overall Percentage
-  const MAX_TOTAL_SCORE = 300;
-  const totalPercentage = Math.round((totalScore / MAX_TOTAL_SCORE) * 100);
-
-  // 4. Determine Risk Level
-  // Explicitly type riskLevel to satisfy the ScoreResult interface and prevent generic 'string' inference
-  let riskLevel: ScoreResult['riskLevel'] = 'Foundation';
-  let color = 'text-red-600'; // Default red
-
-  if (totalPercentage <= 25) {
-    riskLevel = 'Foundation';
-    color = 'text-red-600';
-  } else if (totalPercentage <= 50) {
-    riskLevel = 'Developing';
-    color = 'text-orange-500';
-  } else if (totalPercentage <= 70) {
-    riskLevel = 'Established';
-    color = 'text-yellow-500';
-  } else if (totalPercentage <= 85) {
-    riskLevel = 'Advanced';
-    color = 'text-green-500';
-  } else {
-    riskLevel = 'Leading';
-    color = 'text-green-600';
+    // Normalise to 0-100
+    dimensionScores[dimension] = maxPossible > 0 
+      ? Math.round((totalScore / maxPossible) * 100) 
+      : 0;
   }
 
+  return dimensionScores;
+}
+
+/**
+ * Calculate weighted overall score
+ */
+export function calculateOverallScore(dimensionScores: Record<Dimension, number>): number {
+  let weightedTotal = 0;
+  let totalWeight = 0;
+
+  for (const [dimension, weight] of Object.entries(DIMENSION_WEIGHTS)) {
+    const score = dimensionScores[dimension as Dimension] || 0;
+    weightedTotal += score * weight;
+    totalWeight += weight;
+  }
+
+  return Math.round(weightedTotal / totalWeight);
+}
+
+/**
+ * Get segment from Q6 answer
+ */
+export function getSegment(answers: Answers): Segment {
+  const q6 = QUESTIONS.find(q => q.id === 'q6');
+  if (!q6) return Segment.EXPLORING;
+
+  const answerIndex = answers['q6'];
+  if (answerIndex === undefined) return Segment.EXPLORING;
+
+  const selectedOption = q6.options[answerIndex];
+  return selectedOption?.segment || Segment.EXPLORING;
+}
+
+/**
+ * Find strongest and weakest dimensions
+ * Uses DIMENSION_PRIORITY for tie-breaking
+ */
+export function findExtremes(dimensionScores: Record<Dimension, number>): {
+  strongest: Dimension;
+  weakest: Dimension;
+} {
+  let strongest: Dimension = Dimension.LeadershipGravity;
+  let weakest: Dimension = Dimension.LeadershipGravity;
+  let highestScore = -1;
+  let lowestScore = 101;
+
+  // Use priority order for consistent tie-breaking
+  for (const dimension of DIMENSION_PRIORITY) {
+    const score = dimensionScores[dimension];
+    
+    if (score > highestScore) {
+      highestScore = score;
+      strongest = dimension;
+    }
+    
+    if (score < lowestScore) {
+      lowestScore = score;
+      weakest = dimension;
+    }
+  }
+
+  return { strongest, weakest };
+}
+
+/**
+ * Main scoring function - returns complete results
+ */
+export function calculateResults(answers: Answers): ScoreResult {
+  const dimensionScores = calculateDimensionScores(answers);
+  const overallScore = calculateOverallScore(dimensionScores);
+  const segment = getSegment(answers);
+  const { strongest, weakest } = findExtremes(dimensionScores);
+  const riskLevel = getScoreBand(overallScore);
+
   return {
+    totalPercentage: overallScore,
     dimensionScores,
-    dimensionPercentages,
-    totalScore,
-    totalPercentage,
+    dimensionPercentages: dimensionScores, // Already normalised to 0-100
     riskLevel,
-    color,
+    segment,
+    strongestDimension: strongest,
+    weakestDimension: weakest,
   };
-};
+}
+
+/**
+ * Get gap between score and target (useful for UI)
+ * Target is 80 (threshold for "Ready")
+ */
+export function calculateGaps(dimensionScores: Record<Dimension, number>): Record<Dimension, number> {
+  const TARGET = 80;
+  const gaps: Record<Dimension, number> = {} as Record<Dimension, number>;
+
+  for (const dimension of Object.values(Dimension)) {
+    gaps[dimension] = Math.max(0, TARGET - dimensionScores[dimension]);
+  }
+
+  return gaps;
+}
