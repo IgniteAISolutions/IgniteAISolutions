@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScoreResult, Dimension } from '../types';
-import { RECOMMENDATIONS, SCORE_BANDS, SEGMENT_MESSAGING, CALENDLY_LINK } from '../constants';
+// FIX: Point to ../utils/constants
+import { RECOMMENDATIONS, SCORE_BANDS, SEGMENT_MESSAGING, BOOKING_LINK } from '../utils/constants';
 import Button from './Button';
 import {
   Radar,
@@ -36,12 +37,11 @@ const Results: React.FC<ResultsProps> = ({ score }) => {
   const weakestRec = RECOMMENDATIONS[score.weakestDimension];
   const segmentInfo = SEGMENT_MESSAGING[score.segment];
   
-  // Calculate gap for weakest dimension
   const weakestScore = score.dimensionPercentages[score.weakestDimension];
   const gap = 80 - weakestScore; 
 
   const handleBookCall = () => {
-    window.open(CALENDLY_LINK, '_blank');
+    window.open(BOOKING_LINK, '_blank');
   };
 
   const getScoreColour = (pct: number): string => {
@@ -159,7 +159,7 @@ const Results: React.FC<ResultsProps> = ({ score }) => {
         </div>
       </div>
 
-      {/* PRIORITY ACTION */}
+      {/* PRIORITY ACTION - Single Focus */}
       <div className="mb-12">
         <div className="flex items-center gap-3 mb-6">
           <Target className="w-6 h-6 text-orange-500" />
@@ -222,7 +222,7 @@ const Results: React.FC<ResultsProps> = ({ score }) => {
         </div>
       </div>
 
-      {/* NEXT STEP */}
+      {/* NEXT STEP - SPARK Positioning */}
       <div className="glass-panel p-8 md:p-10 text-center border border-white/10 print:hidden">
         <h2 className="text-2xl md:text-3xl font-black text-white mb-4">
           This Assessment Covers the Human Side
