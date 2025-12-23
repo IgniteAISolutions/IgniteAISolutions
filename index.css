@@ -213,3 +213,10 @@ input, select, textarea {
     page-break-inside: avoid;
   }
 }
+/* =========================================
+   FIX FOR SELECT DROPDOWN VISIBILITY
+   ========================================= */
+select option {
+  background-color: #ffffff !important; /* Forces dropdown background to white */
+  color: #000000 !important;            /* Forces dropdown text to black */
+}
