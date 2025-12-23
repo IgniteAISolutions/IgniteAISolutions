@@ -1,10 +1,12 @@
-import { Dimension, Segment, ScoreResult } from '../types';
+import { Dimension, Segment, ScoreResult } from '../types'; // UP to types
 import { 
   QUESTIONS, 
   DIMENSION_WEIGHTS, 
-  DIMENSION_PRIORITY,
-  getScoreBand 
-} from '../constants';
+  DIMENSION_PRIORITY, 
+  SCORE_BANDS 
+} from './constants'; // SIDEWAYS to constants
+
+// ... (Rest of your scoring.ts logic stays exactly the same) ...
 
 type Answers = Record<string, number>;
 
