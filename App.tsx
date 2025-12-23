@@ -37,7 +37,7 @@ const App: React.FC = () => {
     // --- GHL WEBHOOK INTEGRATION (FIXED) ---
     // This maps your specific fields to generic CRM fields to prevent build errors
     const payload = {
-      name: `${data.firstName} ${data.lastName}`, // Concatenates first and last name
+      name: `${data.firstName} ${data.lastName}`, // Concatenates first and last name for CRM
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
