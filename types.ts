@@ -1,5 +1,3 @@
-// types.ts
-
 export enum Dimension {
   LeadershipGravity = 'Leadership Gravity',
   CulturalResilience = 'Cultural Resilience',
@@ -9,36 +7,54 @@ export enum Dimension {
   CapacityDirection = 'Capacity Direction',
 }
 
-// Segmentation based on Q6 answer
 export enum Segment {
-  UNSURE = 'UNSURE',
-  EXPLORING = 'EXPLORING',
-  EXPERIMENTING = 'EXPERIMENTING',
-  PILOTING = 'PILOTING',
-  SCALING = 'SCALING',
-  EMBEDDED = 'EMBEDDED',
+  UNSURE = 'Unsure',
+  EXPLORING = 'Exploring',
+  EXPERIMENTING = 'Experimenting',
+  PILOTING = 'Piloting',
+  SCALING = 'Scaling',
+  EMBEDDED = 'Embedded',
 }
 
-export interface QuestionOption {
+export interface Option {
   label: string;
   score: number;
-  segment?: Segment; // Only used for Q6
+  segment?: Segment;
 }
 
 export interface Question {
   id: string;
   dimension: Dimension;
   text: string;
-  options: QuestionOption[];
-  isSegmentQuestion?: boolean; // Flags Q6 for special handling
+  options: Option[];
+  isSegmentQuestion?: boolean;
+}
+
+export interface LeadData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  companyName: string;
+  jobTitle: string;
+  turnover: string;
+  gdprConsent: boolean;
+  utm?: {
+    source?: string;
+    medium?: string;
+    campaign?: string;
+  };
 }
 
 export interface ScoreResult {
-  totalPercentage: number;
   dimensionScores: Record<Dimension, number>;
   dimensionPercentages: Record<Dimension, number>;
+  totalScore: number;
+  totalPercentage: number;
   riskLevel: string;
-  segment: Segment;
-  strongestDimension: Dimension;
-  weakestDimension: Dimension;
+  color?: string;
+  segment: Segment; // Required now
+  strongestDimension: Dimension; // Required for logic
+  weakestDimension: Dimension;   // Required for Results.tsx
 }
+
+export type Step = 'landing' | 'lead-capture' | 'quiz' | 'results';
