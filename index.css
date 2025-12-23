@@ -31,9 +31,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   overflow-x: hidden;
-  
-  /* GLOBAL FONT SIZE BOOST */
-  font-size: 18px; /* Was 16px - makes everything 12.5% larger */
+  font-size: 18px; 
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -44,18 +42,16 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.02em;
 }
 
-/* Adjusted Clamps for larger impact */
 h1 { font-size: clamp(3.5rem, 6vw, 5rem); }
 h2 { font-size: clamp(2.5rem, 5vw, 3.5rem); }
 h3 { font-size: clamp(1.75rem, 4vw, 2.5rem); }
 
 p {
   color: #E2E8F0;
-  font-size: 1.125rem; /* Forces paragraphs to be larger (18px+) */
+  font-size: 1.125rem; 
   margin-bottom: 1.5rem;
 }
 
-/* Make form inputs readable and easy to tap */
 input, select, textarea {
   font-size: 1rem !important; 
   line-height: 1.5 !important;
@@ -67,7 +63,7 @@ input, select, textarea {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-glass);
-  border-radius: 24px; /* Slightly more rounded for modern feel */
+  border-radius: 24px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
 }
 
@@ -78,7 +74,7 @@ input, select, textarea {
   border-bottom: 1px solid var(--border-glass);
 }
 
-/* Button Styles - Pill Shape & Gradients */
+/* Button Styles */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -88,7 +84,7 @@ input, select, textarea {
   letter-spacing: 0.02em;
   background: var(--gradient-accent);
   color: #ffffff;
-  padding: 0.875rem 2.5rem; /* Larger padding */
+  padding: 0.875rem 2.5rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 0 25px rgba(249, 115, 22, 0.4);
   border: none;
@@ -124,7 +120,6 @@ input, select, textarea {
   color: #ffffff;
 }
 
-/* Text Gradient Utility */
 .text-gradient {
   background: var(--gradient-accent);
   -webkit-background-clip: text;
@@ -133,13 +128,11 @@ input, select, textarea {
   display: inline-block;
 }
 
-/* Custom Range/Progress Colors */
 .progress-bar-fill {
   background: var(--gradient-accent);
   box-shadow: 0 0 15px rgba(249, 115, 22, 0.5);
 }
 
-/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -150,59 +143,73 @@ input, select, textarea {
 }
 
 /* =========================================
-   PRINT STYLES (For PDF Download)
+   PRINT STYLES (Fixes PDF Overlap)
    ========================================= */
 @media print {
   @page {
-    margin: 0;
+    margin: 1.5cm;
     size: auto;
   }
   
   body {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    background-color: #0B0F19 !important; /* Force Dark Background */
-    color: white !important;
+    background-color: #ffffff !important; /* Cleaner white bg for print */
+    color: #000000 !important;
   }
 
-  /* Hide Navigation, Buttons, and Footer during print */
-  nav, footer, button, .print\:hidden {
+  /* Hide UI elements */
+  nav, footer, button, .print\:hidden, .btn-primary, .btn-secondary {
     display: none !important;
   }
 
-  /* Force Glass Panels to look solid/readable on paper */
+  /* Layout Fixes to prevent Overlap */
   .glass-panel {
-    background-color: #111827 !important; /* Dark Slate for panels */
-    border: 1px solid #374151 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
     box-shadow: none !important;
-    color: white !important;
+    color: #000000 !important;
+    
+    /* Critical for fixing overlap */
     break-inside: avoid;
-    margin-bottom: 20px;
+    page-break-inside: avoid;
+    margin-bottom: 2rem !important;
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 
-  /* Ensure text is readable */
-  p, h1, h2, h3, h4, span, label, input {
-    color: white !important;
-    text-shadow: none !important;
-  }
-  
-  /* Reset layout for paper width */
-  .max-w-6xl, .max-w-5xl, .max-w-4xl, .max-w-2xl {
+  /* Reset widths */
+  .max-w-6xl, .max-w-5xl, .max-w-4xl, .max-w-2xl, .w-full {
     max-width: 100% !important;
     width: 100% !important;
-    padding: 20px !important;
+    padding: 0 !important;
     margin: 0 !important;
   }
 
-  /* Ensure Radar Chart is visible */
-  .recharts-wrapper {
-    background-color: white !important; /* Chart needs white bg to be readable on paper */
-    border-radius: 12px;
-    padding: 10px;
+  /* Fix Grid/Flex layouts collapsing on print */
+  .grid {
+    display: block !important;
   }
   
-  /* Force page breaks where needed */
-  .page-break-before-always {
-    page-break-before: always !important;
+  .col-span-1, .col-span-2 {
+    width: 100% !important;
+    margin-bottom: 20px;
+  }
+
+  /* Typography for Print */
+  p, h1, h2, h3, h4, span, label, li {
+    color: #000000 !important;
+    text-shadow: none !important;
+  }
+  
+  h1 { font-size: 24pt !important; }
+  h2 { font-size: 18pt !important; margin-top: 20px !important; }
+  p { font-size: 11pt !important; line-height: 1.4 !important; }
+
+  /* Ensure Radar Chart is visible */
+  .recharts-wrapper {
+    margin: 0 auto;
+    page-break-inside: avoid;
   }
 }
