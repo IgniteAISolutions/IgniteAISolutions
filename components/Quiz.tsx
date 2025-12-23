@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { QUESTIONS } from '../constants';
+import { QUESTIONS } from '../utils/constants';
 import Button from './Button';
 import ProgressBar from './ProgressBar';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
