@@ -34,15 +34,15 @@ const App: React.FC = () => {
     };
     setLeadData(completeLead);
 
-    // --- GHL WEBHOOK INTEGRATION ---
-    // FIX: Map the new specific fields (firstName, companyName) to the generic CRM fields
+    // --- GHL WEBHOOK INTEGRATION (FIXED) ---
+    // This maps your specific fields to generic CRM fields to prevent build errors
     const payload = {
-      name: `${data.firstName} ${data.lastName}`, // Combine names for CRM
+      name: `${data.firstName} ${data.lastName}`, // Concatenates first and last name
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
-      company: data.companyName, // Map companyName -> company
-      role: data.jobTitle,       // Map jobTitle -> role
+      company: data.companyName, // Maps companyName -> company
+      role: data.jobTitle,       // Maps jobTitle -> role
       turnover: data.turnover,
       source: 'AI Readiness Scorecard',
       ...utmParams
@@ -61,7 +61,6 @@ const App: React.FC = () => {
   };
 
   const handleQuizComplete = (answers: Record<string, number>) => {
-    // Calculate results using the new scoring logic
     const result = calculateScores(answers);
     setScoreResult(result);
     setStep('results');
