@@ -8,7 +8,7 @@ import {
 
 type Answers = Record<string, number>;
 
-// --- THIS WAS MISSING ---
+// --- THIS FUNCTION WAS MISSING ---
 const getScoreBand = (score: number): string => {
   for (const [band, config] of Object.entries(SCORE_BANDS)) {
     if (score >= config.range[0] && score <= config.range[1]) {
@@ -17,7 +17,7 @@ const getScoreBand = (score: number): string => {
   }
   return 'Building'; 
 };
-// ------------------------
+// ---------------------------------
 
 export function calculateDimensionScores(answers: Answers): Record<Dimension, number> {
   const dimensionScores: Record<Dimension, number> = {} as Record<Dimension, number>;
@@ -103,7 +103,9 @@ export function calculateScores(answers: Answers): ScoreResult {
   const overallScore = calculateOverallScore(dimensionScores);
   const segment = getSegment(answers);
   const { strongest, weakest } = findExtremes(dimensionScores);
-  const riskLevel = getScoreBand(overallScore);
+  
+  // This line was failing because the function didn't exist
+  const riskLevel = getScoreBand(overallScore); 
 
   return {
     totalPercentage: overallScore,
