@@ -1,7 +1,3 @@
-You are absolutely right. If you are seeing your own details, it is likely because **Browser Autofill** is filling them in, or the previous placeholders (like "Jane Doe") felt too specific.
-
-Here is the updated **`LeadForm.tsx`** with generic, clear placeholders exactly as you requested.
-
 ### Update `src/components/LeadForm.tsx`
 
 *Changes: Updated all `placeholder=""` values to generic "Your Name", "Your Surname", etc.*
