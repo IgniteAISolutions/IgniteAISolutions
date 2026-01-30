@@ -1,8 +1,3 @@
-### Update `src/components/LeadForm.tsx`
-
-*Changes: Updated all `placeholder=""` values to generic "Your Name", "Your Surname", etc.*
-
-```tsx
 import React, { useState } from 'react';
 import { LeadData } from '../types';
 import Button from './Button';
@@ -61,7 +56,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit }) => {
               value={formData.firstName} 
               onChange={handleChange}
               className={inputClasses}
-              placeholder="Your First Name"
+              placeholder="Your Name"
             />
           </div>
           <div>
@@ -87,7 +82,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit }) => {
             value={formData.email} 
             onChange={handleChange}
             className={inputClasses}
-            placeholder="Your Email"
+            placeholder="Your Work Email"
           />
         </div>
 
@@ -101,7 +96,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit }) => {
                 value={formData.companyName} 
                 onChange={handleChange}
                 className={inputClasses}
-                placeholder="Your Company"
+                placeholder="Your Company Name"
             />
             </div>
              <div>
@@ -173,5 +168,3 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit }) => {
 };
 
 export default LeadForm;
-
-```
