@@ -1,0 +1,18 @@
+{
+  "name": "AI Readiness Scorecard",
+  "short_name": "AI Scorecard",
+  "description": "Assess your organization's AI readiness in 3 minutes",
+  "icons": [
+    {
+      "src": "/ignite-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#FF5200",
+  "background_color": "#0B0F19",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}

@@ -37,6 +37,7 @@ export interface LeadData {
   companyName: string;
   jobTitle: string;
   turnover: string;
+  leadSource?: 'AI Readiness Scorecard' | 'Lead Magnet' | 'Survey' | 'Lead Response Crisis Form';
   gdprConsent: boolean;
   utm?: {
     source?: string;

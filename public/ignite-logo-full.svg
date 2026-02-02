@@ -1,0 +1,46 @@
+<svg width="500" height="140" viewBox="0 0 500 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dual Flame Icon -->
+  <defs>
+    <linearGradient id="orangeFlameFull" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFB84D;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF5200;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DC2626;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="blueFlameFull" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Orange Flame (Right) -->
+  <path d="M 75 120 Q 82 95 86 75 Q 90 55 94 42 Q 98 25 102 12 Q 100 19 98 28 Q 96 38 94 47 Q 92 60 88 72 Q 84 88 80 100 Q 76 110 75 120 Z" fill="url(#orangeFlameFull)"/>
+  <path d="M 75 120 Q 78 102 80 85 Q 82 72 84 60 Q 86 47 88 38 Q 90 25 92 16 L 90 22 Q 88 32 86 44 Q 84 56 82 69 Q 80 84 77 96 Q 75 108 75 120 Z" fill="url(#orangeFlameFull)" opacity="0.7"/>
+
+  <!-- Blue Flame (Left) -->
+  <path d="M 50 120 Q 43 95 39 75 Q 35 55 31 42 Q 27 25 23 12 Q 25 19 27 28 Q 29 38 31 47 Q 33 60 37 72 Q 41 88 45 100 Q 49 110 50 120 Z" fill="url(#blueFlameFull)"/>
+  <path d="M 50 120 Q 47 102 45 85 Q 43 72 41 60 Q 39 47 37 38 Q 35 25 33 16 L 35 22 Q 37 32 39 44 Q 41 56 43 69 Q 45 84 48 96 Q 50 108 50 120 Z" fill="url(#blueFlameFull)" opacity="0.7"/>
+
+  <!-- Circuit patterns -->
+  <circle cx="78" cy="50" r="1.5" fill="white" opacity="0.5"/>
+  <circle cx="85" cy="63" r="1.5" fill="white" opacity="0.5"/>
+  <circle cx="81" cy="38" r="1.5" fill="white" opacity="0.5"/>
+  <line x1="78" y1="50" x2="85" y2="63" stroke="white" stroke-width="0.4" opacity="0.3"/>
+  <line x1="81" y1="38" x2="78" y2="50" stroke="white" stroke-width="0.4" opacity="0.3"/>
+
+  <circle cx="47" cy="50" r="1.5" fill="white" opacity="0.5"/>
+  <circle cx="40" cy="63" r="1.5" fill="white" opacity="0.5"/>
+  <circle cx="44" cy="38" r="1.5" fill="white" opacity="0.5"/>
+  <line x1="47" y1="50" x2="40" y2="63" stroke="white" stroke-width="0.4" opacity="0.3"/>
+  <line x1="44" y1="38" x2="47" y2="50" stroke="white" stroke-width="0.4" opacity="0.3"/>
+
+  <!-- Text: IGNITE AI -->
+  <text x="130" y="80" font-family="'Plus Jakarta Sans', sans-serif" font-size="48" font-weight="800" fill="white" letter-spacing="2">
+    IGNITE <tspan fill="#FF5200">AI</tspan>
+  </text>
+
+  <!-- Text: SOLUTIONS LTD. -->
+  <text x="130" y="105" font-family="'Plus Jakarta Sans', sans-serif" font-size="18" font-weight="600" fill="#9CA3AF" letter-spacing="6">
+    SOLUTIONS LTD.
+  </text>
+</svg>
