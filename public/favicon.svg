@@ -1,0 +1,25 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFB84D"/>
+      <stop offset="100%" style="stop-color:#FF5200"/>
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#60A5FA"/>
+      <stop offset="100%" style="stop-color:#1E40AF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="32" height="32" fill="#0B0F19"/>
+
+  <!-- Orange Flame -->
+  <path d="M 19 28 Q 21 22 22 18 Q 23 13 24 10 Q 25 6 26 3 Q 25 5 24 7 Q 23 10 22 13 Q 21 17 20 21 Q 19 25 19 28 Z" fill="url(#orangeGrad)"/>
+
+  <!-- Blue Flame -->
+  <path d="M 13 28 Q 11 22 10 18 Q 9 13 8 10 Q 7 6 6 3 Q 7 5 8 7 Q 9 10 10 13 Q 11 17 12 21 Q 13 25 13 28 Z" fill="url(#blueGrad)"/>
+
+  <!-- Circuit dots -->
+  <circle cx="20" cy="12" r="0.8" fill="white" opacity="0.6"/>
+  <circle cx="12" cy="12" r="0.8" fill="white" opacity="0.6"/>
+</svg>

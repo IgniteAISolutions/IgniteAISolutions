@@ -26,16 +26,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
       <div className="fixed -bottom-[20%] -left-[10%] w-[800px] h-[800px] rounded-full bg-[radial-gradient(circle,rgba(220,38,38,0.1)_0%,rgba(0,0,0,0)_70%)] pointer-events-none z-0" />
 
       {/* --- HEADER / NAVIGATION --- */}
-      <nav className="fixed w-full z-50 border-b border-white/10 bg-[#0B0F19]/95 backdrop-blur-md">
+      <nav className="fixed w-full z-50 border-b border-white/10 bg-[#0B0F19]/95 backdrop-blur-md glass-nav">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20">
             {/* Logo */}
             <div className="flex items-center">
               <a href="/" className="flex-shrink-0 flex items-center">
-                <img 
-                  src="/IgniteAI.Logo.jpg" 
-                  alt="Ignite AI Solutions Logo" 
-                  className="h-10 md:h-12 w-auto object-contain rounded-md border border-white/10"
+                <img
+                  src="/ignite-logo-full.svg"
+                  alt="Ignite AI Solutions Logo"
+                  className="h-10 md:h-12 w-auto object-contain"
                 />
               </a>
             </div>

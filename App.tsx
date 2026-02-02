@@ -5,12 +5,14 @@ import Quiz from './components/Quiz';
 import Results from './components/Results';
 import { Step, LeadData, ScoreResult } from './types';
 import { calculateScores } from './utils/scoring';
+import { createNotionLead, updateNotionWithScore } from './utils/notion';
 
 const App: React.FC = () => {
   const [step, setStep] = useState<Step>('landing');
   const [leadData, setLeadData] = useState<LeadData | null>(null);
   const [scoreResult, setScoreResult] = useState<ScoreResult | null>(null);
   const [utmParams, setUtmParams] = useState<{ source?: string; medium?: string; campaign?: string }>({});
+  const [notionPageId, setNotionPageId] = useState<string | null>(null);
 
   // Capture UTM parameters on mount
   useEffect(() => {
@@ -27,40 +29,64 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleLeadSubmit = (data: LeadData) => {
+  const handleLeadSubmit = async (data: LeadData) => {
     const completeLead = {
       ...data,
       utm: utmParams
     };
     setLeadData(completeLead);
 
-    // --- GHL WEBHOOK INTEGRATION (FIXED) ---
-    const payload = {
-      name: `${data.firstName} ${data.lastName}`, 
+    // --- GHL WEBHOOK INTEGRATION ---
+    const ghlPayload = {
+      name: `${data.firstName} ${data.lastName}`,
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
-      company: data.companyName, 
-      role: data.jobTitle,       
+      company: data.companyName,
+      role: data.jobTitle,
       turnover: data.turnover,
-      source: 'AI Readiness Scorecard',
+      source: data.leadSource || 'AI Readiness Scorecard',
       ...utmParams
     };
 
     fetch('https://services.leadconnectorhq.com/hooks/x9IxlQebO9PXRux0i04o/webhook-trigger/43cbab61-c625-4f3d-9b33-5c0ab84abf53', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    }).catch(err => console.error('Webhook Error:', err));
-    // -------------------------------
+      body: JSON.stringify(ghlPayload)
+    }).catch(err => console.error('GHL Webhook Error:', err));
+
+    // --- NOTION INTEGRATION ---
+    // Create lead record in Notion and store page ID for later update
+    try {
+      const pageId = await createNotionLead(data, utmParams);
+      if (pageId) {
+        setNotionPageId(pageId);
+        console.log('Lead captured in Notion:', pageId);
+      }
+    } catch (error) {
+      console.error('Notion integration error:', error);
+      // Don't block user flow if Notion fails
+    }
 
     setStep('quiz');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleQuizComplete = (answers: Record<string, number>) => {
+  const handleQuizComplete = async (answers: Record<string, number>) => {
     const result = calculateScores(answers);
     setScoreResult(result);
+
+    // --- UPDATE NOTION WITH QUIZ RESULTS ---
+    if (notionPageId) {
+      try {
+        await updateNotionWithScore(notionPageId, result);
+        console.log('Notion updated with quiz score');
+      } catch (error) {
+        console.error('Failed to update Notion with score:', error);
+        // Don't block user flow if update fails
+      }
+    }
+
     setStep('results');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -75,7 +101,7 @@ const App: React.FC = () => {
       <nav className="sticky top-0 z-50 glass-nav print:hidden">
         <div className="max-w-7xl mx-auto px-6 sm:px-10 h-24 flex items-center justify-between">
           <div className="flex items-center space-x-4 group cursor-pointer" onClick={() => setStep('landing')}>
-            <img src="/Ignite letterhead.png" onError={(e) => { e.currentTarget.src = "/spark-logo.png"; }} alt="Ignite AI Solutions" className="h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
+            <img src="/ignite-logo-full.svg" alt="Ignite AI Solutions" className="h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
           </div>
           <div className="hidden md:flex items-center space-x-6">
             <a href="https://igniteaisolutions.co.uk" className="text-xs font-black text-white hover:text-orange-500 transition-all uppercase tracking-[0.2em] border border-white/20 px-6 py-3 rounded-full hover:bg-white/5">Back to Main Website</a>

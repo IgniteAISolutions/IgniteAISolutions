@@ -8,6 +8,21 @@ interface LeadFormProps {
 }
 
 const LeadForm: React.FC<LeadFormProps> = ({ onSubmit }) => {
+  // Capture lead source from URL parameter or default to "AI Readiness Scorecard"
+  const getLeadSource = (): LeadData['leadSource'] => {
+    const params = new URLSearchParams(window.location.search);
+    const sourceParam = params.get('source');
+
+    const validSources: Array<LeadData['leadSource']> = [
+      'AI Readiness Scorecard',
+      'Lead Magnet',
+      'Survey',
+      'Lead Response Crisis Form'
+    ];
+
+    return validSources.find(s => s === sourceParam) || 'AI Readiness Scorecard';
+  };
+
   const [formData, setFormData] = useState<Partial<LeadData>>({
     firstName: '',
     lastName: '',
@@ -15,6 +30,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit }) => {
     companyName: '',
     jobTitle: '',
     turnover: '',
+    leadSource: getLeadSource(),
     gdprConsent: false,
   });
 
