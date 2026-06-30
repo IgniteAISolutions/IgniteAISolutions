@@ -160,7 +160,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSubmit }) => {
               <svg className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 text-white opacity-0 peer-checked:opacity-100 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
             </div>
             <span className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-300 transition-colors">
-              I agree to receive my report and occasional insights on AI strategy. I accept the <a href="https://igniteaisolutions.co.uk/privacy.html" target="_blank" rel="noreferrer" className="underline text-orange-500 hover:text-orange-400 font-bold z-10 relative" onClick={(e) => e.stopPropagation()}>Privacy Policy</a> and understand I can unsubscribe at any time.
+              I agree to receive my report and occasional insights on AI strategy. I accept the <a href="https://igniteaisolutions.co.uk/privacy" target="_blank" rel="noreferrer" className="underline text-orange-500 hover:text-orange-400 font-bold z-10 relative" onClick={(e) => e.stopPropagation()}>Privacy Policy</a> and understand I can unsubscribe at any time.
             </span>
           </label>
         </div>

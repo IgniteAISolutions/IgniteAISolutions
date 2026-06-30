@@ -7,12 +7,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        charcoal: '#0B0F19',
+        charcoal: '#021129',
         ignite: {
-          navy: '#1a365d',
-          orange: '#ed8936',
-          blue: '#2c5282',
-          light: '#f7fafc',
+          navy: '#021129',
+          navy2: '#0a1b38',
+          orange: '#F97316',
+          orangeDark: '#e2530a',
+          blue: '#3B82F6',
+          light: '#EAF0FB',
         }
       },
       fontFamily: {

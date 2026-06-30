@@ -95,7 +95,7 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-charcoal flex flex-col font-sans text-white selection:bg-orange-500/30">
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
           <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-orange-600/5 rounded-full blur-[120px] animate-pulse"></div>
-          <div className="absolute bottom-[-5%] left-[-5%] w-[40vw] h-[40vw] bg-red-600/5 rounded-full blur-[100px]"></div>
+          <div className="absolute bottom-[-5%] left-[-5%] w-[40vw] h-[40vw] bg-blue-500/5 rounded-full blur-[100px]"></div>
       </div>
 
       <nav className="sticky top-0 z-50 glass-nav print:hidden">
@@ -116,12 +116,12 @@ const App: React.FC = () => {
         {step === 'results' && scoreResult && <Results score={scoreResult} />}
       </main>
 
-      <footer className="border-t border-white/10 mt-32 py-16 bg-black/60 print:hidden relative z-10">
+      <footer className="border-t border-white/10 mt-32 py-16 bg-[#020d1f] print:hidden relative z-10">
         <div className="max-w-7xl mx-auto px-6 sm:px-10 text-center">
             <p className="text-gray-600 text-sm font-medium tracking-wide">
               © {new Date().getFullYear()} Ignite AI Solutions Ltd. Built for UK Business.
               <span className="mx-3 text-gray-700">|</span>
-              <a href="https://igniteaisolutions.co.uk/privacy.html" target="_blank" rel="noreferrer" className="hover:text-orange-500 transition-colors">Privacy Policy</a>
+              <a href="https://igniteaisolutions.co.uk/privacy" target="_blank" rel="noreferrer" className="hover:text-orange-500 transition-colors">Privacy Policy</a>
             </p>
         </div>
       </footer>
