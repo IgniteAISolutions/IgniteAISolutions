@@ -37,7 +37,7 @@ const App: React.FC = () => {
     setLeadData(completeLead);
 
     // --- NOTION INTEGRATION ---
-    // Create lead record in Notion and store page ID for later update
+    // Saved server-side via api/lead.js; store the page ID for the score update
     try {
       const pageId = await createNotionLead(data, utmParams);
       if (pageId) {
@@ -58,9 +58,9 @@ const App: React.FC = () => {
     setScoreResult(result);
 
     // --- UPDATE NOTION WITH QUIZ RESULTS ---
-    if (notionPageId) {
+    if (notionPageId && leadData) {
       try {
-        await updateNotionWithScore(notionPageId, result);
+        await updateNotionWithScore(notionPageId, leadData.email, result);
         console.log('Notion updated with quiz score');
       } catch (error) {
         console.error('Failed to update Notion with score:', error);
