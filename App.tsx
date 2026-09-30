@@ -36,25 +36,6 @@ const App: React.FC = () => {
     };
     setLeadData(completeLead);
 
-    // --- GHL WEBHOOK INTEGRATION ---
-    const ghlPayload = {
-      name: `${data.firstName} ${data.lastName}`,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      company: data.companyName,
-      role: data.jobTitle,
-      turnover: data.turnover,
-      source: data.leadSource || 'AI Readiness Scorecard',
-      ...utmParams
-    };
-
-    fetch('https://services.leadconnectorhq.com/hooks/x9IxlQebO9PXRux0i04o/webhook-trigger/43cbab61-c625-4f3d-9b33-5c0ab84abf53', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(ghlPayload)
-    }).catch(err => console.error('GHL Webhook Error:', err));
-
     // --- NOTION INTEGRATION ---
     // Create lead record in Notion and store page ID for later update
     try {
