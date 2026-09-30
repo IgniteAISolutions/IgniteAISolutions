@@ -36,27 +36,8 @@ const App: React.FC = () => {
     };
     setLeadData(completeLead);
 
-    // --- GHL WEBHOOK INTEGRATION ---
-    const ghlPayload = {
-      name: `${data.firstName} ${data.lastName}`,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      company: data.companyName,
-      role: data.jobTitle,
-      turnover: data.turnover,
-      source: data.leadSource || 'AI Readiness Scorecard',
-      ...utmParams
-    };
-
-    fetch('https://services.leadconnectorhq.com/hooks/x9IxlQebO9PXRux0i04o/webhook-trigger/43cbab61-c625-4f3d-9b33-5c0ab84abf53', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(ghlPayload)
-    }).catch(err => console.error('GHL Webhook Error:', err));
-
     // --- NOTION INTEGRATION ---
-    // Create lead record in Notion and store page ID for later update
+    // Saved server-side via api/lead.js; store the page ID for the score update
     try {
       const pageId = await createNotionLead(data, utmParams);
       if (pageId) {
@@ -77,9 +58,9 @@ const App: React.FC = () => {
     setScoreResult(result);
 
     // --- UPDATE NOTION WITH QUIZ RESULTS ---
-    if (notionPageId) {
+    if (notionPageId && leadData) {
       try {
-        await updateNotionWithScore(notionPageId, result);
+        await updateNotionWithScore(notionPageId, leadData.email, result);
         console.log('Notion updated with quiz score');
       } catch (error) {
         console.error('Failed to update Notion with score:', error);
