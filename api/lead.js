@@ -9,13 +9,6 @@ const PEOPLE_DB = process.env.NOTION_PEOPLE_DATABASE_ID || '74d2e458a6764d06b606
 const OPPORTUNITIES_DB = process.env.NOTION_OPPORTUNITIES_DATABASE_ID || '51ed2991b8e847ae9a22999dae1d70f6';
 const SOURCE = 'AI Readiness Scorecard';
 
-const TURNOVER_LABELS = {
-  '<1M': 'Under £1m',
-  '1M-10M': '£1m to £10m',
-  '10M-50M': '£10m to £50m',
-  '50M+': '£50m+',
-};
-
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const text = (value, max = 200) => String(value ?? '').trim().slice(0, max);
 const richText = (value, max) => ({ rich_text: [{ text: { content: text(value, max) } }] });
@@ -78,9 +71,9 @@ async function createLead(token, lead, utm) {
     `Email: ${email}`,
     `Company: ${company}`,
     `Role: ${text(lead.jobTitle) || 'not given'}`,
-    `Turnover: ${TURNOVER_LABELS[lead.turnover] || text(lead.turnover) || 'not given'}`,
+    `Team size: ${text(lead.teamSize, 60) || 'not given'}`,
     `GDPR consent given ${new Date().toISOString()}`,
-    'Quiz started, not yet completed.',
+    'Scorecard result to follow.',
   ].join('\n');
 
   const opportunity = await notion('/pages', 'POST', token, {
@@ -113,14 +106,18 @@ async function addScore(token, pageId, email, score) {
   }
   const percentage = Number(score.totalPercentage);
   const result = [
-    `Score: ${Number.isFinite(percentage) ? Math.round(percentage) : '?'}%`,
-    `Risk level: ${text(score.riskLevel, 60)}`,
-    `Segment: ${text(score.segment, 60)}`,
-    `Weakest dimension: ${text(score.weakestDimension, 60)}`,
+    `Score: ${Number.isFinite(percentage) ? Math.round(percentage) : '?'} out of 100`,
+    `Band: ${text(score.band, 60)}`,
+    ...(score.capReason ? [`Band held back: ${text(score.capReason, 240)}`] : []),
+    `Weakest area: ${text(score.weakestArea, 60)}`,
+    `Strongest area: ${text(score.strongestArea, 60)}`,
+    `Areas: ${text(score.areas, 300)}`,
+    `Team size: ${text(score.teamSize, 60) || 'not given'}`,
+    `Main tool: ${text(score.mainTool, 60) || 'not given'}`,
   ].join('\n');
   await notion(`/pages/${encodeURIComponent(pageId)}`, 'PATCH', token, {
     properties: {
-      Notes: richText(notes.replace('Quiz started, not yet completed.', `Quiz completed.\n${result}`), 1900),
+      Notes: richText(notes.replace('Scorecard result to follow.', `Scorecard completed.\n${result}`), 1900),
     },
   });
   return true;
