@@ -1,4 +1,5 @@
 import { LeadData, ScoreResult } from '../types';
+import { AREAS, AREA_ORDER, TEAM_SIZE_LABELS } from './constants';
 
 // Leads are written to Notion by the server function in api/lead.js, so the
 // Notion token never reaches the browser.
@@ -35,12 +36,12 @@ export async function createNotionLead(
 }
 
 /**
- * Adds the quiz results to the lead's Notion record.
+ * Adds the scorecard result to the lead's Notion record.
  */
 export async function updateNotionWithScore(
   pageId: string,
   email: string,
-  scoreResult: ScoreResult
+  result: ScoreResult
 ): Promise<boolean> {
   try {
     const response = await postLead({
@@ -48,10 +49,14 @@ export async function updateNotionWithScore(
       pageId,
       email,
       score: {
-        totalPercentage: scoreResult.totalPercentage,
-        riskLevel: scoreResult.riskLevel,
-        segment: scoreResult.segment,
-        weakestDimension: scoreResult.weakestDimension,
+        totalPercentage: result.overall,
+        band: result.band,
+        capReason: result.capReason,
+        weakestArea: AREAS[result.priorities[0]].name,
+        strongestArea: AREAS[result.strongest].name,
+        areas: AREA_ORDER.map((a) => `${AREAS[a].name} ${result.areaScores[a]}`).join(', '),
+        teamSize: result.context.teamSize ? TEAM_SIZE_LABELS[result.context.teamSize] : '',
+        mainTool: result.context.mainTool ?? '',
       },
     });
     return response.ok;

@@ -3,18 +3,30 @@ import LandingPage from './components/LandingPage';
 import LeadForm from './components/LeadForm';
 import Quiz from './components/Quiz';
 import Results from './components/Results';
-import { Step, LeadData, ScoreResult } from './types';
+import { Context, LeadData, ScoreResult, Step } from './types';
 import { calculateScores } from './utils/scoring';
 import { createNotionLead, updateNotionWithScore } from './utils/notion';
+import { SITE, TEAM_SIZE_LABELS } from './utils/constants';
+
+// The main site shows this app inside a frame on /assessment, which already
+// has the site menu and footer around it.
+const EMBEDDED = (() => {
+  try { return window.self !== window.top; } catch { return true; }
+})();
+
+const NAV_LINKS = [
+  { label: 'Claude training', href: `${SITE}/train` },
+  { label: 'AI governance', href: `${SITE}/govern` },
+  { label: 'Pricing', href: `${SITE}/pricing` },
+  { label: 'Case studies', href: `${SITE}/case-studies` },
+];
 
 const App: React.FC = () => {
   const [step, setStep] = useState<Step>('landing');
-  const [leadData, setLeadData] = useState<LeadData | null>(null);
   const [scoreResult, setScoreResult] = useState<ScoreResult | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [utmParams, setUtmParams] = useState<{ source?: string; medium?: string; campaign?: string }>({});
-  const [notionPageId, setNotionPageId] = useState<string | null>(null);
 
-  // Capture UTM parameters on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setUtmParams({
@@ -24,89 +36,80 @@ const App: React.FC = () => {
     });
   }, []);
 
-  const handleStart = () => {
-    setStep('lead-capture');
+  const go = (next: Step) => {
+    setStep(next);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleQuizComplete = (answers: Record<string, number>, context: Context) => {
+    setScoreResult(calculateScores(answers, context));
+    go('details');
+  };
+
+  // Details are optional. The result shows whether or not the save works.
   const handleLeadSubmit = async (data: LeadData) => {
-    const completeLead = {
-      ...data,
-      utm: utmParams
-    };
-    setLeadData(completeLead);
-
-    // --- NOTION INTEGRATION ---
-    // Saved server-side via api/lead.js; store the page ID for the score update
+    if (!scoreResult) return;
+    setSubmitting(true);
     try {
-      const pageId = await createNotionLead(data, utmParams);
-      if (pageId) {
-        setNotionPageId(pageId);
-        console.log('Lead captured in Notion:', pageId);
-      }
+      const teamSize = scoreResult.context.teamSize ? TEAM_SIZE_LABELS[scoreResult.context.teamSize] : '';
+      const pageId = await createNotionLead({ ...data, teamSize, utm: utmParams }, utmParams);
+      if (pageId) await updateNotionWithScore(pageId, data.email, scoreResult);
     } catch (error) {
-      console.error('Notion integration error:', error);
-      // Don't block user flow if Notion fails
+      console.error('Lead capture error:', error);
     }
-
-    setStep('quiz');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setSubmitting(false);
+    go('results');
   };
 
-  const handleQuizComplete = async (answers: Record<string, number>) => {
-    const result = calculateScores(answers);
-    setScoreResult(result);
-
-    // --- UPDATE NOTION WITH QUIZ RESULTS ---
-    if (notionPageId && leadData) {
-      try {
-        await updateNotionWithScore(notionPageId, leadData.email, result);
-        console.log('Notion updated with quiz score');
-      } catch (error) {
-        console.error('Failed to update Notion with score:', error);
-        // Don't block user flow if update fails
-      }
-    }
-
-    setStep('results');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const restart = () => {
+    setScoreResult(null);
+    go('landing');
   };
 
   return (
     <div className="min-h-screen bg-charcoal flex flex-col font-sans text-white selection:bg-orange-500/30">
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-          <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-orange-600/5 rounded-full blur-[120px] animate-pulse"></div>
-          <div className="absolute bottom-[-5%] left-[-5%] w-[40vw] h-[40vw] bg-blue-500/5 rounded-full blur-[100px]"></div>
-      </div>
-
-      <nav className="sticky top-0 z-50 glass-nav print:hidden">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 h-24 flex items-center justify-between">
-          <div className="flex items-center space-x-4 group cursor-pointer" onClick={() => setStep('landing')}>
-            <img src="/ignite-logo-full.svg" alt="Ignite AI Solutions" className="h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
+      {!EMBEDDED && (
+        <nav className="sticky top-0 z-50 glass-nav print:hidden">
+          <div className="max-w-6xl mx-auto px-5 sm:px-8 h-20 flex items-center justify-between gap-6">
+            <a href={`${SITE}/`} aria-label="Ignite AI Solutions, home" className="flex-none">
+              <img src="/ignite-logo-2026-navy.webp" alt="Ignite AI Solutions" width="600" height="600" className="h-16 w-auto object-contain" />
+            </a>
+            <div className="hidden md:flex items-center gap-7 text-sm font-medium">
+              {NAV_LINKS.map((link) => (
+                <a key={link.href} href={link.href} className="text-gray-300 hover:text-white transition-colors">{link.label}</a>
+              ))}
+            </div>
+            <a href={`${SITE}/contact`} className="flex-none text-sm font-bold text-white bg-gradient-to-br from-[#F97316] to-[#e2530a] px-5 py-2.5 rounded-full">
+              Speak to us
+            </a>
           </div>
-          <div className="hidden md:flex items-center space-x-6">
-            <a href="https://igniteaisolutions.co.uk" className="text-xs font-black text-white hover:text-orange-500 transition-all uppercase tracking-[0.2em] border border-white/20 px-6 py-3 rounded-full hover:bg-white/5">Back to Main Website</a>
-          </div>
-        </div>
-      </nav>
+        </nav>
+      )}
 
       <main className="flex-grow relative z-10">
-        {step === 'landing' && <LandingPage onStart={handleStart} />}
-        {step === 'lead-capture' && <LeadForm onSubmit={handleLeadSubmit} />}
+        {step === 'landing' && <LandingPage onStart={() => go('quiz')} />}
         {step === 'quiz' && <Quiz onComplete={handleQuizComplete} />}
-        {step === 'results' && scoreResult && <Results score={scoreResult} />}
+        {step === 'details' && <LeadForm onSubmit={handleLeadSubmit} onSkip={() => go('results')} submitting={submitting} />}
+        {step === 'results' && scoreResult && <Results score={scoreResult} onRestart={restart} />}
       </main>
 
-      <footer className="border-t border-white/10 mt-32 py-16 bg-[#020d1f] print:hidden relative z-10">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 text-center">
-            <p className="text-gray-600 text-sm font-medium tracking-wide">
-              © {new Date().getFullYear()} Ignite AI Solutions Ltd. Built for UK Business.
-              <span className="mx-3 text-gray-700">|</span>
-              <a href="https://igniteaisolutions.co.uk/privacy" target="_blank" rel="noreferrer" className="hover:text-orange-500 transition-colors">Privacy Policy</a>
+      {!EMBEDDED && (
+        <footer className="border-t border-white/10 mt-16 py-10 bg-[#020d1f] print:hidden relative z-10">
+          <div className="max-w-6xl mx-auto px-5 sm:px-8 text-sm text-gray-400 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+            <p>
+              © {new Date().getFullYear()} Ignite AI Solutions Ltd. Company no. 16194166.
+              66 Paul Street, London EC2A 4NA.
             </p>
-        </div>
-      </footer>
+            <p className="flex gap-5">
+              <a href={`${SITE}/`} className="hover:text-white">Main site</a>
+              <a href={`${SITE}/privacy`} className="hover:text-white">Privacy</a>
+              <a href={`${SITE}/contact`} className="hover:text-white">Contact</a>
+            </p>
+          </div>
+        </footer>
+      )}
     </div>
   );
 };
+
 export default App;

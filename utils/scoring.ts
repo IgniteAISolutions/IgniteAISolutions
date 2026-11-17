@@ -1,121 +1,84 @@
-import { Dimension, Segment, ScoreResult } from '../types';
-import { 
-  QUESTIONS, 
-  DIMENSION_WEIGHTS, 
-  DIMENSION_PRIORITY,
-  SCORE_BANDS 
+import { AreaId, Band, Context, ScoreResult } from '../types';
+import {
+  AREAS, AREA_ORDER, BANDS, BAND_ORDER, MAX_OPTION_SCORE, QUESTIONS, RULES_FLOOR, WORKING_FLOOR,
 } from './constants';
 
-type Answers = Record<string, number>;
+export type Answers = Record<string, number>;
 
-// --- THIS FUNCTION WAS MISSING ---
-const getScoreBand = (score: number): string => {
-  for (const [band, config] of Object.entries(SCORE_BANDS)) {
-    if (score >= config.range[0] && score <= config.range[1]) {
-      return band;
-    }
+/**
+ * How the score works.
+ *
+ * 1. Each of the 18 questions scores 0 to 3.
+ * 2. An area score is the points earned in its three questions as a
+ *    percentage of the nine available.
+ * 3. The overall score is the plain average of the six area scores. No area
+ *    carries extra weight, because we have no evidence that one matters more.
+ * 4. The band comes from the overall score, with two caps so a high average
+ *    cannot hide a missing foundation:
+ *      - Working needs every area at 50 or more.
+ *      - Rules and data below 25 holds the band at Trying it out.
+ */
+export function areaScores(answers: Answers): Record<AreaId, number> {
+  const out = {} as Record<AreaId, number>;
+  for (const area of AREA_ORDER) {
+    const questions = QUESTIONS.filter((q) => q.area === area);
+    const earned = questions.reduce((sum, q) => sum + (answers[q.id] ?? 0), 0);
+    out[area] = Math.round((earned / (questions.length * MAX_OPTION_SCORE)) * 100);
   }
-  return 'Building'; 
-};
-// ---------------------------------
-
-export function calculateDimensionScores(answers: Answers): Record<Dimension, number> {
-  const dimensionScores: Record<Dimension, number> = {} as Record<Dimension, number>;
-  Object.values(Dimension).forEach(d => dimensionScores[d] = 0);
-
-  const dimensionQuestions: Record<Dimension, typeof QUESTIONS> = {
-    [Dimension.LeadershipGravity]: [],
-    [Dimension.CulturalResilience]: [],
-    [Dimension.SkillVisibility]: [],
-    [Dimension.ChampionDensity]: [],
-    [Dimension.GovernanceConfidence]: [],
-    [Dimension.CapacityDirection]: [],
-  };
-
-  QUESTIONS.forEach(q => dimensionQuestions[q.dimension].push(q));
-
-  for (const dimension of Object.values(Dimension)) {
-    const questions = dimensionQuestions[dimension];
-    if (questions.length === 0) continue;
-
-    let totalScore = 0;
-    let maxPossible = 0;
-
-    questions.forEach(q => {
-      const answerScore = answers[q.id] || 0;
-      totalScore += answerScore;
-      const maxOption = Math.max(...q.options.map(o => o.score));
-      maxPossible += maxOption;
-    });
-
-    dimensionScores[dimension] = maxPossible > 0 
-      ? Math.round((totalScore / maxPossible) * 100) 
-      : 0;
-  }
-  return dimensionScores;
+  return out;
 }
 
-export function calculateOverallScore(dimensionScores: Record<Dimension, number>): number {
-  let weightedTotal = 0;
-  let totalWeight = 0;
+export function overallScore(scores: Record<AreaId, number>): number {
+  const values = AREA_ORDER.map((a) => scores[a]);
+  return Math.round(values.reduce((s, v) => s + v, 0) / values.length);
+}
 
-  for (const [dimension, weight] of Object.entries(DIMENSION_WEIGHTS)) {
-    const score = dimensionScores[dimension as Dimension] || 0;
-    weightedTotal += score * weight;
-    totalWeight += weight;
+export function bandFor(score: number): Band {
+  let band: Band = BANDS[0].band;
+  for (const b of BANDS) if (score >= b.min) band = b.band;
+  return band;
+}
+
+const lower = (a: Band, b: Band): Band => (BAND_ORDER.indexOf(a) <= BAND_ORDER.indexOf(b) ? a : b);
+
+export function applyCaps(uncapped: Band, scores: Record<AreaId, number>): { band: Band; capReason: string | null } {
+  let band = uncapped;
+  let capReason: string | null = null;
+
+  const belowFloor = AREA_ORDER.filter((a) => scores[a] < WORKING_FLOOR);
+  if (band === 'Working' && belowFloor.length) {
+    band = 'Building';
+    capReason = `Working needs every area at ${WORKING_FLOOR} or more. ${belowFloor.map((a) => AREAS[a].name).join(' and ')} scored lower.`;
   }
-  return totalWeight > 0 ? Math.round(weightedTotal / totalWeight) : 0;
-}
-
-export function getSegment(answers: Answers): Segment {
-  const q6 = QUESTIONS.find(q => q.id === 'q6');
-  if (!q6) return Segment.EXPLORING;
-  const score = answers['q6'];
-  const selectedOption = q6.options.find(o => o.score === score);
-  return selectedOption?.segment || Segment.EXPLORING;
-}
-
-export function findExtremes(dimensionScores: Record<Dimension, number>): {
-  strongest: Dimension;
-  weakest: Dimension;
-} {
-  let strongest: Dimension = DIMENSION_PRIORITY[0];
-  let weakest: Dimension = DIMENSION_PRIORITY[0];
-  let highestScore = -1;
-  let lowestScore = 101;
-
-  for (const dimension of DIMENSION_PRIORITY) {
-    const score = dimensionScores[dimension];
-    if (score > highestScore) {
-      highestScore = score;
-      strongest = dimension;
-    }
-    if (score < lowestScore) {
-      lowestScore = score;
-      weakest = dimension;
-    }
+  if (scores.rules < RULES_FLOOR && lower(band, 'Trying it out') !== band) {
+    band = 'Trying it out';
+    capReason = `Rules and data scored ${scores.rules}. Until people know what data stays out of AI tools, the rest is built on a risk.`;
   }
-  return { strongest, weakest };
+  return { band, capReason };
 }
 
-export function calculateScores(answers: Answers): ScoreResult {
-  const dimensionScores = calculateDimensionScores(answers);
-  const overallScore = calculateOverallScore(dimensionScores);
-  const segment = getSegment(answers);
-  const { strongest, weakest } = findExtremes(dimensionScores);
-  
-  // This line was failing because the function didn't exist
-  const riskLevel = getScoreBand(overallScore); 
+/** Weakest first. Equal scores keep the foundations-first order of AREA_ORDER. */
+export function priorities(scores: Record<AreaId, number>): AreaId[] {
+  return [...AREA_ORDER].sort((a, b) => scores[a] - scores[b] || AREA_ORDER.indexOf(a) - AREA_ORDER.indexOf(b));
+}
 
+export function strongestArea(scores: Record<AreaId, number>): AreaId {
+  return [...AREA_ORDER].sort((a, b) => scores[b] - scores[a] || AREA_ORDER.indexOf(a) - AREA_ORDER.indexOf(b))[0];
+}
+
+export function calculateScores(answers: Answers, context: Context = {}): ScoreResult {
+  const scores = areaScores(answers);
+  const overall = overallScore(scores);
+  const uncappedBand = bandFor(overall);
+  const { band, capReason } = applyCaps(uncappedBand, scores);
   return {
-    totalPercentage: overallScore,
-    totalScore: overallScore,
-    dimensionScores,
-    dimensionPercentages: dimensionScores,
-    riskLevel,
-    segment,
-    strongestDimension: strongest,
-    weakestDimension: weakest,
-    color: overallScore >= 80 ? '#10B981' : '#F97316'
+    areaScores: scores,
+    overall,
+    uncappedBand,
+    band,
+    capReason,
+    strongest: strongestArea(scores),
+    priorities: priorities(scores),
+    context,
   };
 }
